@@ -125,10 +125,6 @@ def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, mode
         
         print(f"Raw Image Indecies: {image_sampled_indicies}")
     
-    
-    
-    
-    
     if cfg.inference.use_augmentation:
         _dataset = _dataset.map(convert_to_augmentation_mod_infer,
                             batched=True,

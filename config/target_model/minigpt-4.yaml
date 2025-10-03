@@ -1,0 +1,12 @@
+type: minigpt
+model:
+  arch: minigpt4
+  model_type: pretrain_llama2
+  freeze_vit: true
+  freeze_qformer: true
+  max_txt_len: 160
+  end_sym: "</s>"
+  low_resource: True
+  prompt_path: "MiniGPT-4prompts/alignment.txt"
+  # prompt_template: '[INST] {} [/INST] '
+  ckpt: '' #pre-trained ckpt
