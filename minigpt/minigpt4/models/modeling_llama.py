@@ -7,14 +7,14 @@ from torch.nn import CrossEntropyLoss
 
 from transformers.utils import add_start_docstrings_to_model_forward, replace_return_docstrings
 from transformers.modeling_outputs import CausalLMOutputWithPast
-from transformers.models.llama.modeling_llama import LLAMA_INPUTS_DOCSTRING, _CONFIG_FOR_DOC
+# LLAMA_INPUTS_DOCSTRING and _CONFIG_FOR_DOC are no longer available in newer transformers versions
 from transformers.models.llama.modeling_llama import LlamaForCausalLM as LlamaForCausalLMOrig
 
 
 class LlamaForCausalLM(LlamaForCausalLMOrig):
 
-    @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
-    @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
+    # @add_start_docstrings_to_model_forward(LLAMA_INPUTS_DOCSTRING)
+    # @replace_return_docstrings(output_type=CausalLMOutputWithPast, config_class=_CONFIG_FOR_DOC)
     def forward(
         self,
         input_ids: torch.LongTensor = None,
@@ -28,6 +28,8 @@ class LlamaForCausalLM(LlamaForCausalLMOrig):
         output_hidden_states: Optional[bool] = None,
         return_dict: Optional[bool] = None,
         reduction: Optional[str] = "mean",
+        cache_position: Optional[torch.LongTensor] = None,  # Added for transformers 4.57+ compatibility
+        **kwargs  # Added to handle any other new parameters
     ) -> Union[Tuple, CausalLMOutputWithPast]:
         r"""
         Args:
@@ -62,17 +64,24 @@ class LlamaForCausalLM(LlamaForCausalLMOrig):
         return_dict = return_dict if return_dict is not None else self.config.use_return_dict
 
         # decoder outputs consists of (dec_features, layer_state, dec_hidden, dec_attn)
-        outputs = self.model(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            position_ids=position_ids,
-            past_key_values=past_key_values,
-            inputs_embeds=inputs_embeds,
-            use_cache=use_cache,
-            output_attentions=output_attentions,
-            output_hidden_states=output_hidden_states,
-            return_dict=return_dict,
-        )
+        # Filter kwargs to only include parameters that the model expects
+        model_kwargs = {
+            'input_ids': input_ids,
+            'attention_mask': attention_mask,
+            'position_ids': position_ids,
+            'past_key_values': past_key_values,
+            'inputs_embeds': inputs_embeds,
+            'use_cache': use_cache,
+            'output_attentions': output_attentions,
+            'output_hidden_states': output_hidden_states,
+            'return_dict': return_dict,
+        }
+        
+        # Add cache_position if it's not None (for newer transformers versions)
+        if cache_position is not None:
+            model_kwargs['cache_position'] = cache_position
+            
+        outputs = self.model(**model_kwargs)
 
         hidden_states = outputs[0]
         if hasattr(self.config, 'pretraining_tp') and self.config.pretraining_tp > 1:

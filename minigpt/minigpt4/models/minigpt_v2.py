@@ -5,10 +5,10 @@ import torch
 from torch.cuda.amp import autocast as autocast
 import torch.nn as nn
 
-from minigpt4.common.registry import registry
-from minigpt4.models.base_model import disabled_train
-from minigpt4.models.minigpt_base import MiniGPTBase
-from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
+from ..common.registry import registry
+from .base_model import disabled_train
+from .minigpt_base import MiniGPTBase
+from .Qformer import BertConfig, BertLMHeadModel
 
 
 @registry.register_model("minigpt_v2")

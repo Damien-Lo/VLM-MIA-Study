@@ -21,7 +21,5 @@ datasets:
       train:
         name: "blip_caption"
 
-
-
 run:
   task: image_text_pretrain

@@ -14,8 +14,8 @@ from matplotlib.patches import Polygon, Rectangle
 from torch.utils.data import Dataset
 import webdataset as wds
 
-from minigpt4.datasets.datasets.base_dataset import BaseDataset
-from minigpt4.datasets.datasets.caption_datasets import CaptionDataset
+from .base_dataset import BaseDataset
+from .caption_datasets import CaptionDataset
 
 
 class UnnaturalDataset(Dataset):

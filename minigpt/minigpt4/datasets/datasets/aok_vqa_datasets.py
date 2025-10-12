@@ -13,7 +13,7 @@ import torch
 
 from PIL import Image
 
-from minigpt4.datasets.datasets.vqa_datasets import VQADataset  #, VQAEvalDataset
+from .vqa_datasets import VQADataset  #, VQAEvalDataset
 
 
 class __DisplMixin:

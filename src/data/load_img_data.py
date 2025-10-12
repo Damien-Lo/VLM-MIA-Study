@@ -52,44 +52,57 @@ def load_images(image_files):
     return out
 
 
-def get_generation_data(cfg, tokenizer, image_processor, text, model_config, conv_mode):
+def get_generation_data(cfg, model_type, text, tokenizer=None, image_processor=None, model_config=None, conv_mode=None):
     """
     cfg :  dataset config
     tokenizer: tokenizer instance
     text: Input instruction text (Describe this image)
     model_config: model.config
     conv: conv_mode
+    model_tyep: cfg.target_model.type: Either llava or minigpt
     """
     _dataset = load_dataset(path=cfg.data.dataset,
                           name=cfg.data.subset,
                           split=cfg.data.split,
                           cache_dir=cfg.path.cache_dir)
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
-    if cfg.generation.use_augmentation:
-        _dataset = _dataset.map(convert_to_aug_generation_input_ids,
-                            batched=True,
-                            load_from_cache_file=False,
-                            fn_kwargs={
-                                "tokenizer": tokenizer,
-                                "image_processor": image_processor,
-                                "instruction": text,
-                                "model_config": model_config,
-                                "conv_mode": conv_mode,
-                                "cfg": cfg
-                            })
-        
-    else:
-        _dataset = _dataset.map(convert_to_generation_input_ids,
-                            batched=True,
-                            load_from_cache_file=False,
-                            fn_kwargs={
-                                "tokenizer": tokenizer,
-                                "image_processor": image_processor,
-                                "instruction": text,
-                                "model_config": model_config,
-                                "conv_mode": conv_mode,
-                                "cfg": cfg
-                            })
+    if model_type == "llava":
+        if cfg.generation.use_augmentation:
+            _dataset = _dataset.map(convert_to_aug_generation_input_ids,
+                                batched=True,
+                                load_from_cache_file=False,
+                                fn_kwargs={
+                                    "tokenizer": tokenizer,
+                                    "image_processor": image_processor,
+                                    "instruction": text,
+                                    "model_config": model_config,
+                                    "conv_mode": conv_mode,
+                                    "cfg": cfg
+                                })
+            
+        else:
+            _dataset = _dataset.map(convert_to_generation_input_ids,
+                                batched=True,
+                                load_from_cache_file=False,
+                                fn_kwargs={
+                                    "tokenizer": tokenizer,
+                                    "image_processor": image_processor,
+                                    "instruction": text,
+                                    "model_config": model_config,
+                                    "conv_mode": conv_mode,
+                                    "cfg": cfg
+                                })
+    elif model_type == "minigpt":
+        if cfg.generation.use_augmentation:
+            raise NotImplementedError()
+        else:
+            _dataset = _dataset.map(convert_to_generation_raw,
+                                batched=True,
+                                load_from_cache_file=False,
+                                fn_kwargs={
+                                    "instruction": text
+                                })
+
     return _dataset
 
 def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, model_config, conv_mode):
@@ -274,6 +287,24 @@ def convert_to_aug_generation_input_ids(examples, tokenizer, image_processor, in
         "image_sizes": all_image_sizes,
         "aug_image_tensors": all_aug_images
     }
+
+
+def convert_to_generation_raw(examples, instruction):
+    image_paths = examples["image"]
+    all_images = list()
+    all_texts = list()
+    for _image_path in image_paths:
+        images = load_images([_image_path])
+        all_images.append(images)
+        all_texts.append(instruction)
+
+    return {
+        "indices": examples["indices"],
+        "images": all_images,
+        "texts": all_texts
+    }
+
+## Mod-infer processors
 
 def convert_to_mod_infer(examples, tokenizer, image_processor, instruction, model_config, conv_mode, cfg):
     """

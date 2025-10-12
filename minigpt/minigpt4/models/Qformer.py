@@ -38,10 +38,32 @@ from transformers.modeling_outputs import (
 )
 from transformers.modeling_utils import (
     PreTrainedModel,
-    apply_chunking_to_forward,
-    find_pruneable_heads_and_indices,
-    prune_linear_layer,
 )
+
+# These functions are no longer available in newer transformers versions
+# We'll create simple replacements
+def find_pruneable_heads_and_indices(heads, n_heads, head_size, already_pruned_heads):
+    """
+    Simple replacement for find_pruneable_heads_and_indices.
+    Returns empty lists to disable pruning functionality.
+    """
+    return [], []
+
+def prune_linear_layer(layer, index, dim=0):
+    """
+    Simple replacement for prune_linear_layer.
+    Returns the layer unchanged to disable pruning functionality.
+    """
+    return layer
+
+# apply_chunking_to_forward is no longer available in newer transformers versions
+# We'll create a simple replacement
+def apply_chunking_to_forward(forward_fn, chunk_size, chunk_dim, *input_tensors):
+    """
+    Simple replacement for apply_chunking_to_forward that doesn't do chunking.
+    This maintains compatibility with the original code.
+    """
+    return forward_fn(*input_tensors)
 from transformers.utils import logging
 from transformers.models.bert.configuration_bert import BertConfig
 

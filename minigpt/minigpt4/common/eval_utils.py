@@ -2,15 +2,15 @@ import argparse
 import numpy as np
 from nltk.translate.bleu_score import sentence_bleu
 
-from minigpt4.common.registry import registry
-from minigpt4.common.config import Config
+from .registry import registry
+from .config import Config
 
 # imports modules for registration
-from minigpt4.datasets.builders import *
-from minigpt4.models import *
-from minigpt4.processors import *
-from minigpt4.runners import *
-from minigpt4.tasks import *
+from ..datasets.builders import *
+from ..models import *
+from ..processors import *
+from ..runners import *
+from ..tasks import *
 
 
 

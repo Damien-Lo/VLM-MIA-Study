@@ -10,7 +10,7 @@ import json
 from typing import Dict
 
 from omegaconf import OmegaConf
-from minigpt4.common.registry import registry
+from .registry import registry
 
 
 class Config:
@@ -22,9 +22,13 @@ class Config:
         # Register the config and configuration for setup
         registry.register("configuration", self)
 
-        user_config = self._build_opt_list(self.args.options)
+        if hasattr(self.args, 'options') and args.options is not None:
+            user_config = self._build_opt_list(self.args.options)
+        else:
+            user_config = {}
 
-        config = OmegaConf.load(self.args.cfg_path)
+        # config = OmegaConf.load(self.args.target_model)
+        config = self.args
 
         runner_config = self.build_runner_config(config)
         model_config = self.build_model_config(config, **user_config)
@@ -78,6 +82,11 @@ class Config:
             OmegaConf.load(model_config_path),
             {"model": config["model"]},
         )
+        # print(config.model_config)
+        # model_config = OmegaConf.merge(
+        #     config.model_config,
+        #     {"model": config["model"]}
+        # )
 
         return model_config
 

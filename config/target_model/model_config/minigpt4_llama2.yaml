@@ -1,5 +1,6 @@
 model:
   arch: minigpt4
+  model_type: pretrain_llama2
 
   # vit encoder
   image_size: 224
@@ -8,6 +9,7 @@ model:
   vit_precision: "fp16"
   freeze_vit: True
   has_qformer: False
+
 
   # generation configs
   prompt: ""

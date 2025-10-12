@@ -5,11 +5,14 @@ import torch
 from torch.cuda.amp import autocast as autocast
 import torch.nn as nn
 
-from minigpt4.common.registry import registry
-from minigpt4.models.base_model import disabled_train
-from minigpt4.models.minigpt_base import MiniGPTBase
-from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
+from ..common.registry import registry
+from .base_model import disabled_train
+from .minigpt_base import MiniGPTBase
+from .Qformer import BertConfig, BertLMHeadModel
 
+import os
+from pathlib import Path
+MAIN_DIR = Path(__file__).parent.parent.parent.parent
 
 @registry.register_model("minigpt4")
 class MiniGPT4(MiniGPTBase):
@@ -17,9 +20,13 @@ class MiniGPT4(MiniGPTBase):
     MiniGPT-4 model
     """
 
+    
+    # "config/target_model/model_config/minigpt4_vicuna0.yaml"
+    # "config/target_model/model_configs/minigpt4_llama2.yaml"
+
     PRETRAINED_MODEL_CONFIG_DICT = {
-        "pretrain_vicuna0": "config/target_model/model_type/minigpt4_vicuna0.yaml",
-        "pretrain_llama2": "config/target_model/model_type/minigpt4_llama2.yaml",
+        "pretrain_vicuna0": os.path.join(MAIN_DIR, "config", "target_model", "model_config", "minigpt4_vicuna0.yaml"),
+        "pretrain_llama2": os.path.join(MAIN_DIR, "config", "target_model", "model_config", "minigpt4_llama2.yaml")
     }
 
     def __init__(

@@ -86,6 +86,143 @@ def generate_text(model, vis_processor, img, text, gpu_id, num_gen_token):
 
     return output_text
 
+def generate_text_batch_1(model, vis_processor, images, texts, gpu_id, num_gen_token):
+    """
+    Generate text for a batch of images and texts
+    
+    Args:
+        model: MiniGPT-4 model
+        vis_processor: Visual processor
+        images: List of images (PIL Images, paths, or tensors)
+        texts: List of text prompts (same length as images)
+        gpu_id: GPU device ID
+        num_gen_token: Number of tokens to generate
+    
+    Returns:
+        List of generated text responses
+    """
+    device = f'cuda:{gpu_id}'
+    batch_size = len(images)
+    
+    # Process all images at once
+    processed_images = []
+    for img in images:
+        if isinstance(img, str):  # image path
+            raw_image = Image.open(img).convert('RGB')
+            processed_img = vis_processor(raw_image).unsqueeze(0)
+        elif isinstance(img, Image.Image):
+            processed_img = vis_processor(img).unsqueeze(0)
+        elif isinstance(img, torch.Tensor):
+            if len(img.shape) == 3:
+                img = img.unsqueeze(0)
+            processed_img = img
+        else:
+            raise ValueError(f"Unsupported image type: {type(img)}")
+        
+        processed_images.append(processed_img)
+    
+    # Stack all images into a batch tensor
+    batch_images = torch.cat(processed_images, dim=0).to(device)
+    
+    # Encode all images at once (this is the key!)
+    image_embeds, image_atts = model.encode_img(batch_images)
+    
+    # Generate for each image-text pair
+    outputs = []
+    for i in range(batch_size):
+        # Create conversation state for this sample
+        chat_state = CONV_VISION.copy()
+        
+        # Upload image (using the pre-encoded embedding)
+        img_list = [image_embeds[i:i+1], image_atts[i:i+1]]
+        
+        # Ask question
+        chat_state.append_message(chat_state.roles[0], "<Img><ImageHere></Img>")
+        chat_state.append_message(chat_state.roles[1], texts[i])
+        
+        # Get context embeddings
+        embs, mask_embs = model.get_context_emb(chat_state.get_prompt(), img_list)
+        
+        # Generate response
+        with torch.no_grad():
+            gen_ids = model.llama_model.generate(
+                inputs_embeds=embs,
+                max_new_tokens=num_gen_token,
+                do_sample=False,
+                use_cache=True
+            )
+        
+        # Decode response
+        output_text = model.llama_tokenizer.decode(gen_ids[0], skip_special_tokens=True)
+        outputs.append(output_text.strip())
+    
+    return outputs
+
+def generate_text_batch_optimized(model, vis_processor, images, texts, gpu_id, num_gen_token):
+    """
+    Optimized batch generation that processes all samples together
+    """
+    device = f'cuda:{gpu_id}'
+    batch_size = len(images)
+    
+    # Process all images
+    processed_images = []
+    for img in images:
+        if isinstance(img, str):
+            raw_image = Image.open(img).convert('RGB')
+            processed_img = vis_processor(raw_image).unsqueeze(0)
+        elif isinstance(img, Image.Image):
+            processed_img = vis_processor(img).unsqueeze(0)
+        elif isinstance(img, torch.Tensor):
+            if len(img.shape) == 3:
+                img = img.unsqueeze(0)
+            processed_img = img
+        else:
+            raise ValueError(f"Unsupported image type: {type(img)}")
+        
+        processed_images.append(processed_img)
+    
+    # Stack into batch
+    batch_images = torch.cat(processed_images, dim=0).to(device)
+    
+    # Encode all images at once
+    image_embeds, image_atts = model.encode_img(batch_images)
+    
+    # Create batch conversation states
+    batch_conversations = []
+    batch_img_lists = []
+    
+    for i in range(batch_size):
+        chat_state = CONV_VISION.copy()
+        chat_state.append_message(chat_state.roles[0], "<Img><ImageHere></Img>")
+        chat_state.append_message(chat_state.roles[1], texts[i])
+        
+        img_list = [image_embeds[i:i+1], image_atts[i:i+1]]
+        
+        batch_conversations.append(chat_state)
+        batch_img_lists.append(img_list)
+    
+    # Process all conversations
+    outputs = []
+    for i in range(batch_size):
+        embs, mask_embs = model.get_context_emb(
+            batch_conversations[i].get_prompt(), 
+            batch_img_lists[i]
+        )
+        
+        with torch.no_grad():
+            gen_ids = model.llama_model.generate(
+                inputs_embeds=embs,
+                max_new_tokens=num_gen_token,
+                do_sample=False,
+                use_cache=True
+            )
+        
+        output_text = model.llama_tokenizer.decode(gen_ids[0], skip_special_tokens=True)
+        outputs.append(output_text.strip())
+    
+    return outputs
+
 def evaluate_data(model, vis_processor, test_data, text, gpu_id, num_gen_token):
     print(f"all data size: {len(test_data)}")
     all_output = []

@@ -2,22 +2,22 @@ import os
 import logging
 import warnings
 
-from minigpt4.common.registry import registry
-from minigpt4.datasets.builders.base_dataset_builder import BaseDatasetBuilder
-from minigpt4.datasets.datasets.laion_dataset import LaionDataset
-from minigpt4.datasets.datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset
-from minigpt4.datasets.datasets.text_caps import TextCapDataset
-from minigpt4.datasets.datasets.llava_dataset import LlavaDetailDataset, LlavaReasonDataset, LlavaConversationDataset
-from minigpt4.datasets.datasets.unnatural_instruction import UnnaturalDataset
-from minigpt4.datasets.datasets.multitask_conversation import MultiTaskConversationDataset
-from minigpt4.datasets.datasets.flickr import GroundedDetailDataset,CaptionToObjectDataset,PhraseToObjectDataset
-from minigpt4.datasets.datasets.vg_dataset import ReferVisualGenomeDataset
-from minigpt4.datasets.datasets.coco_dataset import ReferCOCODataset, InvReferCOCODataset
-from minigpt4.datasets.datasets.gqa_datasets import GQADataset
-from minigpt4.datasets.datasets.aok_vqa_datasets import AOKVQADataset
-from minigpt4.datasets.datasets.coco_vqa_datasets import COCOVQADataset
-from minigpt4.datasets.datasets.ocrvqa_dataset import OCRVQADataset
-from minigpt4.datasets.datasets.coco_caption import COCOCapDataset
+from ...common.registry import registry
+from .base_dataset_builder import BaseDatasetBuilder
+from ..datasets.laion_dataset import LaionDataset
+from ..datasets.cc_sbu_dataset import CCSBUDataset, CCSBUAlignDataset
+from ..datasets.text_caps import TextCapDataset
+from ..datasets.llava_dataset import LlavaDetailDataset, LlavaReasonDataset, LlavaConversationDataset
+from ..datasets.unnatural_instruction import UnnaturalDataset
+from ..datasets.multitask_conversation import MultiTaskConversationDataset
+from ..datasets.flickr import GroundedDetailDataset,CaptionToObjectDataset,PhraseToObjectDataset
+from ..datasets.vg_dataset import ReferVisualGenomeDataset
+from ..datasets.coco_dataset import ReferCOCODataset, InvReferCOCODataset
+from ..datasets.gqa_datasets import GQADataset
+from ..datasets.aok_vqa_datasets import AOKVQADataset
+from ..datasets.coco_vqa_datasets import COCOVQADataset
+from ..datasets.ocrvqa_dataset import OCRVQADataset
+from ..datasets.coco_caption import COCOCapDataset
 
 
 @registry.register_builder("multitask_conversation")

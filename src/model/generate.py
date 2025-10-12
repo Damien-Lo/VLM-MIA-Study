@@ -1,5 +1,6 @@
 import torch
 from tqdm import tqdm
+from minigpt.minigpt4.conversation.interact import Interact
 
 def generate_all_response(model, tokenizer, dataloader, num_gen_tokens):
     outputs = list()
@@ -82,6 +83,38 @@ def generate_a_batch(model, tokenizer, batch, num_gen_tokens, use_augmentation):
             outputs.append(_out_text.strip())
         
     return outputs
+
+def generate_a_batch_minigpt(model, vis_encoder, batch, num_gen_tokens, chat_state, gpu_id, use_augmentation):
+    """
+    Generation function from mini-gpt-4
+    It is actually not batched: each image is processed independently.
+    Args:
+        model: model,
+
+    """
+    outputs = list()
+    if use_augmentation:
+        raise NotImplementedError()
+    else:
+        images = batch["images"]
+        texts = batch["texts"]
+        chat = Interact(model, vis_encoder, device="cuda:{}".format(gpu_id))
+        for _img, _text in zip(images, texts):
+            _img_list = []
+            _chat_state = chat_state.copy()
+            llm_message = chat.upload_img(_img[0], _chat_state, _img_list)
+            chat.encode_img(_img_list)
+            chat.ask(_text, _chat_state)
+        
+            gen_ = chat.get_generate_output(conv=_chat_state,
+                                            img_list=_img_list,
+                                            max_new_tokens=num_gen_tokens,
+                                            do_sample=False)
+            output_text = chat.model.llama_tokenizer.decode(gen_[0], skip_special_tokens=True)
+            outputs.append(output_text)
+
+    return outputs
+
 
 class BatchProcessor:
     def __init__(self, dataset, batch_size, use_augmentation):
@@ -176,24 +209,98 @@ class BatchProcessor:
             "aug_image_tensors": aug_image_tensors
         }
 
+class BatchProcessor_minigpt:
+    def __init__(self, dataset, batch_size, use_augmentation):
+        self.dataset = dataset
+        self.use_augmentation = use_augmentation
+        self.batch_size = batch_size
+        self.current_batch = 0
+        self.num_batch = int(len(dataset)/self.batch_size) if len(dataset) % batch_size == 0 else int(len(dataset)/self.batch_size)+1
 
-def generate(model, tokenizer, dataset, cfg):
-    num_gen_tokens = cfg.generation.num_gen_tokens
-    batch_generator = BatchProcessor(dataset=dataset,
-                                     batch_size=cfg.generation.batch_size,
-                                     use_augmentation=cfg.generation.use_augmentation)
+    def __len__(self):
+        return self.num_batch
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.use_augmentation:
+            raise NotImplementedError()
+        else:
+            return self._get_normal_batch()
+    
+    def _get_normal_batch(self):
+        """
+        Return the batched images and texts
+        """
+
+        if self.current_batch == self.num_batch:
+            raise StopIteration
+        
+        batch_begin = self.current_batch * self.batch_size
+        if self.current_batch == self.num_batch-1:
+            batch_end= len(self.dataset)
+        else:
+            batch_end = batch_begin + self.batch_size
+
+        batch_imgs = list()
+        batch_texts = list()
+        batch_indices = list()
+        for _idx in range(batch_begin, batch_end):
+            batch_imgs.append(self.dataset[_idx]["images"])
+            batch_texts.append(self.dataset[_idx]["texts"])
+            batch_indices.append(self.dataset[_idx]["indices"])
+
+        self.current_batch+=1
+        
+        return {
+            "indices": batch_indices,
+            "images": batch_imgs,
+            "texts": batch_texts
+        }
+
+def generate(model, dataset, cfg, tokenizer=None, vis_encoder=None, chat_state=None, gpu_id=None):
+    indices = list()
     outputs = list()
-    
-    # Calculate total number of batches for progress bar
-    total_batches = len(batch_generator)
-    
-    # Add progress bar
-    for b_idx, batch in enumerate(tqdm(batch_generator,
-                            total=total_batches, 
-                            desc="Generating responses", 
-                            unit="batch")):
-        _outputs = generate_a_batch(model, tokenizer, batch, cfg.generation.num_gen_tokens, cfg.generation.use_augmentation)
+    if cfg.target_model.type == "llava":
+        assert tokenizer != None
+        num_gen_tokens = cfg.generation.num_gen_tokens
+        batch_generator = BatchProcessor(dataset=dataset,
+                                        batch_size=cfg.generation.batch_size,
+                                        use_augmentation=cfg.generation.use_augmentation)
+        
+        # Calculate total number of batches for progress bar
+        total_batches = len(batch_generator)
+        
+        # Add progress bar
+        for b_idx, batch in enumerate(tqdm(batch_generator,
+                                total=total_batches, 
+                                desc="Generating responses", 
+                                unit="batch")):
+            _outputs = generate_a_batch(model, tokenizer, batch, cfg.generation.num_gen_tokens, cfg.generation.use_augmentation)
 
-        outputs.extend(_outputs)
+            outputs.extend(_outputs)
+            indices.extend(batch["indices"].tolist())
+    
+    elif cfg.target_model.type == "minigpt":
+        assert vis_encoder != None
+        assert chat_state != None
+        assert gpu_id != None
 
-    return outputs
+        num_gen_tokens = cfg.generation.num_gen_tokens
+        batch_generator = BatchProcessor_minigpt(dataset=dataset,
+                                                 batch_size=cfg.generation.batch_size,
+                                                 use_augmentation=cfg.generation.use_augmentation)
+        total_batches = len(batch_generator)
+
+        for b_idx, batch in enumerate(tqdm(batch_generator,
+                                total=total_batches,
+                                desc="Generating responses",
+                                unit="batch")):
+            _outputs = generate_a_batch_minigpt(model, vis_encoder, batch, num_gen_tokens,
+                                                chat_state, gpu_id, cfg.generation.use_augmentation)
+
+            outputs.extend(_outputs)
+            indices.extend(batch["indices"])
+
+    return indices, outputs

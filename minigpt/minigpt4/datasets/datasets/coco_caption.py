@@ -15,7 +15,7 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
-from minigpt4.datasets.datasets.caption_datasets import COCOCaptionDataset, CaptionEvalDataset
+from .caption_datasets import COCOCaptionDataset, CaptionEvalDataset
 
 COCOCapDataset = COCOCaptionDataset
 
