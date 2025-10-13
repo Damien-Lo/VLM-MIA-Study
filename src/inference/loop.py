@@ -20,15 +20,15 @@ def inference(model, dataset, raw_meta_sampled_indices, proc_meta_sampled_indice
     """
 
     if cfg.target_model.type == "llava":
-        assert tokenizer == None
+        assert tokenizer != None
         batch_processor = BatchProcessor(dataset=dataset,
                                         batch_size=cfg.inference.batch_size,
                                         eos_token_id=tokenizer.eos_token_id,
                                         use_augmentation=cfg.inference.use_augmentation)
-    elif cfg.taret_model.type == "minigpt":
-        assert vis_processor == None
-        assert chat_state == None
-        assert gpu_id == None 
+    elif cfg.target_model.type == "minigpt":
+        assert vis_processor != None
+        assert chat_state != None
+        assert gpu_id != None 
         batch_processor = BatchProcessor_minigpt(dataset=dataset,
                                                 batch_size=cfg.inference.batch_size,
                                                 use_augmentation=cfg.inference.use_augmentation)

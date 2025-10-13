@@ -105,7 +105,7 @@ def get_generation_data(cfg, model_type, text, tokenizer=None, image_processor=N
 
     return _dataset
 
-def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, model_config, conv_mode):
+def get_mod_infer_data(cfg, text, descriptions, model_config=None, tokenizer=None, image_processor=None, conv_mode=None):
     """
     cfg :  dataset config
     descriptions: generated responses
@@ -118,10 +118,9 @@ def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, mode
                           name=cfg.data.subset,
                           split=cfg.data.split,
                           cache_dir=cfg.path.cache_dir)
+
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
     _dataset = _dataset.add_column("desc", descriptions)
-    
-
     
     # Getting The Indecies of Only the Images Selected
     class_labels = _dataset["label"]
@@ -170,7 +169,11 @@ def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, mode
         if cfg.inference.use_augmentation:
             _dataset = _dataset.map(convert_to_augmentation_mod_infer_minigpt,
                                     batched=True,
-                                    load_from_cache_file=False)
+                                    load_from_cache_file=False,
+                                    fn_kwargs={
+                                        "instruction": text,
+                                        "cfg": cfg
+                                    })
         else:
             _dataset = _dataset.map(convert_to_mod_infer_minigpt,
                                     batched=True,
@@ -507,12 +510,12 @@ def convert_to_mod_infer_minigpt(examples, instruction):
 
     return {
         "indices": examples["indices"],
-        "images": all_images,
+        "raw_images": all_images,
         "inst": all_texts,
         "desc": examples["desc"]
     }
 
-def convert_to_augmentation_mod_infer_minigpt(examples, instructions, cfg):
+def convert_to_augmentation_mod_infer_minigpt(examples, instruction, cfg):
     image_paths = examples["image"]
     all_orig_images = list()
     all_aug_images = list()
@@ -524,19 +527,24 @@ def convert_to_augmentation_mod_infer_minigpt(examples, instructions, cfg):
         images = load_images([_image_path])
         
         aug_imgs = dict()
-        for k, aug_f_list in aug_dict.item():
+        for k, aug_f_list in aug_dict.items():
             _aug_img_list = list()
             for _aug_f in aug_f_list:
-                _aug_image_list.append(_aug_f(images[0]))
+                _aug_img = _aug_f(images[0])
+                if isinstance(_aug_img, dict):
+                    raise ValueError("dict")
+                _aug_img_list.append(_aug_img)
             aug_imgs[k] = _aug_img_list
         all_orig_images.append(images[0])
         all_aug_images.append(aug_imgs)
-        all_texts.append(instructions)
+        all_texts.append(instruction)
 
     return {
         "indices": examples["indices"],
         "orig_images": all_orig_images,
         "aug_images": all_aug_images,
+        "orig_raw_images": all_orig_images,
+        "aug_raw_images": all_aug_images,
         "inst": all_texts,
         "desc": examples["desc"]
     }

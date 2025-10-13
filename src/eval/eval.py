@@ -12,6 +12,8 @@ import os
 
 
 def format_to_json(value):
+        if isinstance(value, float):
+            return value
         if isinstance(value, (np.integer, np.int32, np.int64)):
             return int(value)
         elif isinstance(value, (np.floating, np.float32, np.float64)):

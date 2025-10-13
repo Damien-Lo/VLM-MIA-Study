@@ -75,8 +75,8 @@ def main(cfg):
 
     # Generation data
     text = cfg.prompt.text
-    gen_path = os.path.join("gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "senteces.json")
-    with open(gen_text, 'r') as f:
+    gen_path = os.path.join(os.getcwd(), "gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "sentences.json")
+    with open(gen_path, 'r') as f:
         gen_data = json.load(f)
     descriptions = gen_data["sentences"]
 
@@ -92,10 +92,16 @@ def main(cfg):
           )
     
     print("Generating Inference and Augmentations.....")
-    mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, descriptions, tokenizer, text, target_model)
+    if cfg.target_model.type == "llava":
+        model, tokenizer, image_processor, conv_mode = target_model
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions, tokenizer, image_processor, model.config, conv_mode)
+    elif cfg.target_model.type == "minigpt":
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions)
     proc_meta_vaues_sampled_indices = list()
     raw_meta_vaues_sampled_indices = list()
     class_labels = mod_infer_data["label"]
+
+    print("class_labels", type(class_labels))
     
     if cfg.test_run.test_run:
         class_labels = class_labels[: (cfg.inference.batch_size * cfg.inference.test_number_of_batches)]
@@ -182,20 +188,19 @@ def main(cfg):
     if cfg.img_metrics.get_token_labels > 0:
         print("Saving token labels to json...")
         save_to_json(proc_meta_vaues_sampled_indices.tolist(), "all_proc_meta_sampled_examples",cfg)
-        save_to_json(class_labels, "class_labels", cfg)
+        save_to_json(list(class_labels), "class_labels", cfg)
         save_to_json(global_token_labels, "token_labels", cfg)
         
     if cfg.img_metrics.get_raw_meta_examples > 0:
         print("Saving raw meta values to pt......")
         save_to_json(raw_meta_vaues_sampled_indices.tolist(), "all_raw_meta_sampled_examples",cfg)
-        save_to_json(class_labels, "class_labels", cfg)
+        save_to_json(list(class_labels), "class_labels", cfg)
         save_to_pt(sampled_raw_meta, "raw_meta_values", cfg)
     
-
     if cfg.img_metrics.get_proc_meta_examples > 0:
         print("Saving processed meta values to json....")
         save_to_json(proc_meta_vaues_sampled_indices.tolist(), "all_proc_meta_sampled_examples",cfg)
-        save_to_json(class_labels, "class_labels", cfg)
+        save_to_json(list(class_labels), "class_labels", cfg)
         save_to_json(proc_meta, "processed_meta_values", cfg)
         
     print('''

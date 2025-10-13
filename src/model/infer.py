@@ -1,6 +1,8 @@
 import torch
+from PIL import Image
+from io import BytesIO
 from src.model.utils import get_parts_slices
-from minigpt.minigpt4.interact import Interact
+from minigpt.minigpt4.conversation.interact import Interact
 
 class BatchProcessor:
     def __init__(self, dataset, batch_size, eos_token_id, use_augmentation):
@@ -193,7 +195,7 @@ class BatchProcessor_minigpt:
             batch_end = batch_begin + self.batch_size
 
         for _idx in range(batch_begin, batch_end):
-            images.append(self.dataset[_idx]["images"])
+            images.append(self.dataset[_idx]["raw_images"])
             inst.append(self.dataset[_idx]["inst"])
             desc.append(self.dataset[_idx]["desc"])
         self.current_batch+=1
@@ -220,10 +222,18 @@ class BatchProcessor_minigpt:
             batch_end = batch_begin + self.batch_size
 
         for _idx in range(batch_begin, batch_end):
-            images.append(self.dataset[_idx]["orig_images"])
-            aug_images.append(self.dataset[_idx]["aug_images"])
+            _orig_img = self.dataset[_idx]["orig_images"]
+            if isinstance(_orig_img, dict):
+                _orig_img = Image.open(BytesIO(_orig_img["bytes"])).convert("RGB")
+            images.append(_orig_img)
+            _aug_img = self.dataset[_idx]["aug_images"]
+            for k, v in _aug_img.items():
+                for _vi in range(len(v)):
+                    if isinstance(v[_vi], dict):
+                        v[_vi] = Image.open(BytesIO(v[_vi]["bytes"])).convert("RGB")
+            aug_images.append(_aug_img)
             inst.append(self.dataset[_idx]["inst"])
-            desc.append(self.dataset[_idx]["desc"])
+            desc.append(self.dataset[_idx]["desc"])             
         self.current_batch+=1
 
         return {
@@ -418,7 +428,7 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
         img_loss_slice = logits[0, _img_slice.start-1:_img_slice.stop-1, :]
         img_target = torch.nn.functional.softmax(img_loss_slice, dim=-1)
         max_indices = torch.argmax(img_target, axis=-1)
-        _mix_input_ids = torch.cat([seg_tokens[0][0], img_max_input_id, seg_tokens[1][0]], dim=0)
+        _mix_input_ids = torch.cat([seg_tokens[0][0], max_indices, seg_tokens[1][0]], dim=0)
 
         for p in parts:
             if p not in target_parts:
@@ -426,11 +436,11 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
             if p == "img":
                 _slice = _img_slice
             elif p == "inst_desp":
-                _slice = _inst_desc
+                _slice = _inst_desp
             elif p == "inst":
                 _slice = _inst
             elif p == "desp":
-                _slice = _desc
+                _slice = _desp
             else:
                 raise ValueError(f"Not supported goal split {p}")
 
@@ -448,7 +458,7 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
         labels = [''] * input_ids.shape[0]
         labels[_img_slice] = ['img'] * len(_mix_input_ids[_img_slice])
         labels[_inst] = ['inst'] * len(_mix_input_ids[_inst])
-        labels[_desc] = ['desc'] * len(_mix_input_ids[_desc])
+        labels[_desp] = ['desc'] * len(_mix_input_ids[_desp])
         labels_per_sample.append(labels)
         
         return target_parts, labels_per_sample
@@ -466,13 +476,13 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
         desc = batch["desc"]
 
         # Serialized computation
-        chat = Interact(model, vis_processor, device="cuda:{}".format(gpu_id))
         for _image, _aug_image, _inst, _desc in zip(images, aug_images, inst, desc):
+            chat = Interact(model, vis_processor, device="cuda:{}".format(gpu_id))
             _img_list = []
             _chat_state = chat_state.copy()
 
-            # Make an inference on the augmented image
-            llm_message = chat.upload_img(_image, chat_state, _img_list)
+            # Make an inference on the augmented image            
+            llm_message = chat.upload_img(_image, _chat_state, _img_list)
             chat.encode_img(_img_list)
 
             chat.ask(_inst, _chat_state)
@@ -481,30 +491,35 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
 
             outputs, input_ids, seg_tokens = chat.get_output_by_emb(
                 conv=_chat_state,
-                _img_list = _img_list
+                img_list = _img_list
             )
 
             desc_encoding = chat.model.llama_tokenizer(_desc, return_tensors="pt", add_special_tokens=False).to(chat.device).input_ids
-            logits = output.logits
+            logits = outputs.logits
             target_parts, labels_per_sample = _get_parts_from_one_sample(input_ids, logits, seg_tokens, desc_encoding)
 
             if not len(total_parts["orig"]):
                 total_parts["orig"].append(target_parts)
             else:
-                for _key in total_parts["orig"][0].keys():
-                    total_parts["orig"][0][_key].extend(target_parts[_key])
+                for _part in parts:
+                    for _key in total_parts["orig"][0][_part].keys():
+                        total_parts["orig"][0][_part][_key].extend(target_parts[_part][_key])
             total_token_labels.extend(labels_per_sample)
 
-            for k, aug_images in _aug_image:
+            for k, aug_images in _aug_image.items():
+                # For each augmentation type
+
                 if k not in total_parts:
-                    total_parts[k] = [ [] for _ in range(len(aug_images))] # initialize to the number of settings
+                    # Initialize the list for saving each setting
+                    total_parts[k] = [None for _ in range(len(aug_images))]
 
-                for _setting_idx, _aug_img in enumerate(aug_images): # Settings
+                for _setting_idx, _aug_img in enumerate(aug_images):
+                    # For each settings from the k-th augmentation
+                    chat = Interact(model, vis_processor, device="cuda:{}".format(gpu_id))
                     _img_list = []
-                    _chat_state = chat_state.copy()
-
-                    # Make an inference on the original image
-                    llm_message = chat.upload_img(_aug_img, chat_state, _img_list)
+                    _chat_state = chat_state.copy()    
+                    print(k, _setting_idx, type(_aug_img))
+                    llm_message = chat.upload_img(_aug_img, _chat_state, _img_list)
                     chat.encode_img(_img_list)
 
                     chat.ask(_inst, _chat_state)
@@ -513,16 +528,18 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
 
                     outputs, input_ids, seg_tokens = chat.get_output_by_emb(
                         conv=_chat_state,
-                        _img_list = _img_list
+                        img_list = _img_list
                     )
                     desc_encoding = chat.model.llama_tokenizer(_desc, return_tensors="pt", add_special_tokens=False).to(chat.device).input_ids
-                    logits = output.logits
+                    logits = outputs.logits
                     target_parts, labels_per_sample = _get_parts_from_one_sample(input_ids, logits, seg_tokens, desc_encoding)
-                    if not len(total_parts[k][_setting_idx]):
-                        total_parts[k][_setting_idx].append(target_parts)
+                    if total_parts[k][_setting_idx] == None:
+                        total_parts[k][_setting_idx] = target_parts
                     else:
-                        for _key in total_parts[k][_setting_idx].keys():
-                            total_parts[k][_setting_idx][_key].extend(target_parts[_key]) 
+                        for _part in parts:
+                            # Insert (input_ids, probabilities, log_probabilities) from each part to the corresponding setting
+                            for _key in total_parts[k][_setting_idx][_part].keys():
+                                total_parts[k][_setting_idx][_part][_key].extend(target_parts[_part][_key]) 
         
         return total_parts, total_token_labels
 
@@ -539,13 +556,15 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
         desc = batch["desc"]
 
         # Serialized computation
-        chat = Interact(model, vis_processor, device="cuda:{}".format(gpu_id))
+        # chat = Interact(model, vis_processor, device="cuda:{}".format(gpu_id))
         for _image, _inst, _desc in zip(images, inst, desc):
+            chat = Interact(model, vis_processor, device="cuda:{}".format(gpu_id))
+
             _img_list = []
             _chat_state = chat_state.copy()
 
             # Make an inference on the original image
-            llm_message = chat.upload_img(_image, chat_state, _img_list)
+            llm_message = chat.upload_img(_image, _chat_state, _img_list)
             chat.encode_img(_img_list)
 
             chat.ask(_inst, _chat_state)
@@ -554,7 +573,7 @@ def mod_infer_batch_minigpt(model, vis_processor, batch, parts, chat_state, gpu_
 
             outputs, input_ids, seg_tokens = chat.get_output_by_emb(
                 conv=_chat_state,
-                _img_list = _img_list
+                img_list = _img_list
             )
 
             desc_encoding = chat.model.llama_tokenizer(_desc, return_tensors="pt", add_special_tokens=False).to(chat.device).input_ids
