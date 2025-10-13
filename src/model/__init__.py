@@ -1,5 +1,5 @@
 from src.model.generate import generate, generate_a_batch
-from src.model.infer import mod_infer_batch
+from src.model.infer import mod_infer_batch, mod_infer_batch_minigpt
 from llava.mm_utils import get_model_name_from_path
 from llava.model.builder import load_pretrained_model
 from src.misc import load_conversation_template

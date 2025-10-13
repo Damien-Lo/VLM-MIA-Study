@@ -15,10 +15,8 @@ from src.eval import evaluate
 from src.inference import inference
 from src.data import get_mod_infer_data
 from src.data import get_generation_data
-from src.model import generate, mod_infer_batch
-from llava.mm_utils import get_model_name_from_path
-from llava.model.builder import load_pretrained_model
-from src.misc import save_to_json, save_to_pt, load_conversation_template
+from src.model import load_target_model
+from src.misc import save_to_json, save_to_pt
 from textwrap import dedent
 
 @hydra.main(version_base=None, config_path="./config", config_name="run_img")
@@ -73,25 +71,15 @@ def main(cfg):
           )
 
     # Load the target model
-    model_name = get_model_name_from_path(cfg.target_model.model_path)
-
-    tokenizer, model, image_processor, context_len = load_pretrained_model(
-        cfg.target_model.model_path, 
-        cfg.target_model.model_base, 
-        model_name, 
-        gpu_id=cfg.target_model.gpu_id,
-        cache_dir=cfg.path.cache_dir
-    )
-    conv_mode = load_conversation_template(model_name)
-
+    target_model = load_target_model(cfg)
 
     # Generation data
     text = cfg.prompt.text
+    gen_path = os.path.join("gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "senteces.json")
+    with open(gen_text, 'r') as f:
+        gen_data = json.load(f)
+    descriptions = gen_data["sentences"]
 
-    # gen_data = get_generation_data(cfg, tokenizer, image_processor, text, model.config, conv_mode)
-    # indices, descriptions = generate(model, tokenizer, gen_data, cfg)
-    
-    from gen_text import sentences as descriptions
     
     # If we want to get meta values and labels for some samples (first x members and nonmembers) find the indecies these samples live
     print('''
@@ -104,7 +92,7 @@ def main(cfg):
           )
     
     print("Generating Inference and Augmentations.....")
-    mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, model.config, conv_mode)
+    mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, descriptions, tokenizer, text, target_model)
     proc_meta_vaues_sampled_indices = list()
     raw_meta_vaues_sampled_indices = list()
     class_labels = mod_infer_data["label"]
@@ -169,8 +157,16 @@ def main(cfg):
           \n \n
           '''
           )
-    preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, tokenizer, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg)
     
+    if cfg.target_model.type == "llava":
+        model, tokenizer, image_processor, conv_mode = target_model
+        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg)
+    elif cfg.target_model.type == "minigpt":
+        model, vis_encoder, chat_state = target_model
+        gpu_id = model.device.index if hasattr(model, "device") and hasattr(model.device, "index") else 0
+        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices,
+            cfg, vis_processor=vis_encoder, gpu_id=gpu_id, chat_state=chat_state)
+
     print('''
           \n \n
           ==================================================

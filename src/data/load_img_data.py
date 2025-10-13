@@ -121,7 +121,7 @@ def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, mode
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
     _dataset = _dataset.add_column("desc", descriptions)
     
-    
+
     
     # Getting The Indecies of Only the Images Selected
     class_labels = _dataset["label"]
@@ -138,32 +138,46 @@ def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, mode
         
         print(f"Raw Image Indecies: {image_sampled_indicies}")
     
-    if cfg.inference.use_augmentation:
-        _dataset = _dataset.map(convert_to_augmentation_mod_infer,
-                            batched=True,
-                            load_from_cache_file=False,
-                            fn_kwargs={
-                                "tokenizer": tokenizer,
-                                "image_processor": image_processor,
-                                "instruction": text,
-                                "model_config": model_config,
-                                "conv_mode": conv_mode,
-                                "cfg": cfg,
-                                "image_sampled_indicies": image_sampled_indicies
-                            })
+    if cfg.target_model.type == "llava":
+        if cfg.inference.use_augmentation:
+            _dataset = _dataset.map(convert_to_augmentation_mod_infer,
+                                batched=True,
+                                load_from_cache_file=False,
+                                fn_kwargs={
+                                    "tokenizer": tokenizer,
+                                    "image_processor": image_processor,
+                                    "instruction": text,
+                                    "model_config": model_config,
+                                    "conv_mode": conv_mode,
+                                    "cfg": cfg,
+                                    "image_sampled_indicies": image_sampled_indicies
+                                })
 
+        else:
+            _dataset = _dataset.map(convert_to_mod_infer,
+                                batched=True,
+                                load_from_cache_file=False,
+                                fn_kwargs={
+                                    "tokenizer": tokenizer,
+                                    "image_processor": image_processor,
+                                    "instruction": text,
+                                    "model_config": model_config,
+                                    "conv_mode": conv_mode,
+                                    "cfg": cfg
+                                })
+
+    elif cfg.target_model.type == "minigpt":
+        if cfg.inference.use_augmentation:
+            _dataset = _dataset.map(convert_to_augmentation_mod_infer_minigpt,
+                                    batched=True,
+                                    load_from_cache_file=False)
+        else:
+            _dataset = _dataset.map(convert_to_mod_infer_minigpt,
+                                    batched=True,
+                                    load_from_cache_file=False)
     else:
-        _dataset = _dataset.map(convert_to_mod_infer,
-                            batched=True,
-                            load_from_cache_file=False,
-                            fn_kwargs={
-                                "tokenizer": tokenizer,
-                                "image_processor": image_processor,
-                                "instruction": text,
-                                "model_config": model_config,
-                                "conv_mode": conv_mode,
-                                "cfg": cfg
-                            })
+        raise ValueError(f"Unknown model type {cfg.target_model.type}")
+
     return _dataset, categorised_image_sampled_indicies
 
 
@@ -288,7 +302,6 @@ def convert_to_aug_generation_input_ids(examples, tokenizer, image_processor, in
         "aug_image_tensors": all_aug_images
     }
 
-
 def convert_to_generation_raw(examples, instruction):
     image_paths = examples["image"]
     all_images = list()
@@ -373,7 +386,6 @@ def convert_to_mod_infer(examples, tokenizer, image_processor, instruction, mode
         "prompt_1" :  all_prompt_1,
         "desc_shape": all_desc_shape
     }
-
 
 def convert_to_augmentation_mod_infer(examples, tokenizer, image_processor, instruction, model_config, conv_mode, cfg, image_sampled_indicies):
     
@@ -481,4 +493,50 @@ def convert_to_augmentation_mod_infer(examples, tokenizer, image_processor, inst
         "prompt_0": all_prompt_0,
         "prompt_1": all_prompt_1,
         "desc_shape": all_desc_shape
+    }
+
+def convert_to_mod_infer_minigpt(examples, instruction):
+    image_paths = examples["image"]
+    all_images = list()
+    all_texts = list()
+    all_descriptions = list()
+    for _image_path in image_paths:
+        images = load_images([_image_path])
+        all_images.append(images)
+        all_texts.append(instruction)
+
+    return {
+        "indices": examples["indices"],
+        "images": all_images,
+        "inst": all_texts,
+        "desc": examples["desc"]
+    }
+
+def convert_to_augmentation_mod_infer_minigpt(examples, instructions, cfg):
+    image_paths = examples["image"]
+    all_orig_images = list()
+    all_aug_images = list()
+    all_texts = list()
+
+    aug_dict = get_augmentations(cfg)
+
+    for _image_path, _desc in zip(examples["image"], examples["desc"]):
+        images = load_images([_image_path])
+        
+        aug_imgs = dict()
+        for k, aug_f_list in aug_dict.item():
+            _aug_img_list = list()
+            for _aug_f in aug_f_list:
+                _aug_image_list.append(_aug_f(images[0]))
+            aug_imgs[k] = _aug_img_list
+        all_orig_images.append(images[0])
+        all_aug_images.append(aug_imgs)
+        all_texts.append(instructions)
+
+    return {
+        "indices": examples["indices"],
+        "orig_images": all_orig_images,
+        "aug_images": all_aug_images,
+        "inst": all_texts,
+        "desc": examples["desc"]
     }
