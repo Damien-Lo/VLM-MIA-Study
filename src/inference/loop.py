@@ -2,14 +2,15 @@ import os
 import json
 import sys
 from tqdm import tqdm
-from src.model import mod_infer_batch
-from src.model.infer import BatchProcessor
+from src.model import mod_infer_batch, mod_infer_batch_minigpt
+from src.model.infer import BatchProcessor, BatchProcessor_minigpt
 from src.metrics import get_meta_metrics_by_part, get_img_metric_by_parts
 import numpy as np
 from collections import defaultdict
 import torch
 
-def inference(model, tokenizer, dataset, raw_meta_sampled_indices, proc_meta_sampled_indices, cfg):
+def inference(model, dataset, raw_meta_sampled_indices, proc_meta_sampled_indices, cfg,
+              tokenizer=None, vis_processor=None, gpu_id=None, chat_state=None):
     """
     For each batch
         1. Conduct mod-infer
@@ -18,10 +19,22 @@ def inference(model, tokenizer, dataset, raw_meta_sampled_indices, proc_meta_sam
         4. Combine img_metrics
     """
 
-    batch_processor = BatchProcessor(dataset=dataset,
-                                     batch_size=cfg.inference.batch_size,
-                                     eos_token_id=tokenizer.eos_token_id,
-                                     use_augmentation=cfg.inference.use_augmentation)
+    if cfg.target_model.type == "llava":
+        assert tokenizer != None
+        batch_processor = BatchProcessor(dataset=dataset,
+                                        batch_size=cfg.inference.batch_size,
+                                        eos_token_id=tokenizer.eos_token_id,
+                                        use_augmentation=cfg.inference.use_augmentation)
+    elif cfg.target_model.type == "minigpt":
+        assert vis_processor != None
+        assert chat_state != None
+        assert gpu_id != None 
+        batch_processor = BatchProcessor_minigpt(dataset=dataset,
+                                                batch_size=cfg.inference.batch_size,
+                                                use_augmentation=cfg.inference.use_augmentation)
+    else:
+        raise ValueError(f"Unknown model type: {cfg.target_model.type}")
+
     parts = cfg.img_metrics.parts
     global_pred = dict()
     sampled_proc_meta = dict()
@@ -29,8 +42,6 @@ def inference(model, tokenizer, dataset, raw_meta_sampled_indices, proc_meta_sam
     global_token_labels = list()
     
     
-
-
     for _part in parts:
         global_pred[_part] = dict()
         sampled_proc_meta[_part] = dict()
@@ -59,13 +70,17 @@ def inference(model, tokenizer, dataset, raw_meta_sampled_indices, proc_meta_sam
         if cfg.test_run.test_run and b_idx >= cfg.inference.test_number_of_batches:
             break
             
-        
-        target_parts, total_token_labels = mod_infer_batch(model, batch, tokenizer,
-                                       parts=parts,
-                                       use_augmentation=cfg.inference.use_augmentation)
+        if cfg.target_model.type == "llava":
+            target_parts, total_token_labels = mod_infer_batch(model, batch, tokenizer,
+                                        parts=parts,
+                                        use_augmentation=cfg.inference.use_augmentation)
+        elif cfg.target_model.type == "minigpt":
+            target_parts, total_token_labels = mod_infer_batch_minigpt(
+                model, vis_processor, batch, parts, chat_state, gpu_id, cfg.inference.use_augmentation)
+        else:
+            raise ValueError(f"Unknown model type {cfg.target_model.type}")
         
         global_token_labels.extend(total_token_labels)
-
 
         # Process separately for each part
         for _part in parts:
