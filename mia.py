@@ -71,7 +71,7 @@ def main(cfg):
           )
 
     # Load the target model
-    target_model = load_target_model(cfg)
+    target_model = load_target_model(@)
 
     # Generation data
     text = cfg.prompt.text
@@ -90,13 +90,6 @@ def main(cfg):
           \n \n
           '''
           )
-
-    if cfg.data.subset == "img_Flickr":
-        descriptions = flickr_sentences
-    elif cfg.data.subset == "img_dalle":
-        descriptions = dalle_sentences
-    else:
-        raise ValueError(f"Unexpected subset {cfg.data.subset}")
 
     print("Generating Inference and Augmentations.....")
     if cfg.target_model.type == "llava":
