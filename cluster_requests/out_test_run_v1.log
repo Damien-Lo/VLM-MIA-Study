@@ -14,8 +14,20 @@ You are using a model of type llava to instantiate a model of type llava_llama. 
  
 
           
+
+          
+ 
+
+          ==================================================
+                        !!THIS IS A TEST RUN!!
+          ==================================================
+          
+ 
+
+          
+Only Running on first 5 batches
 Full Config Paramters:
-{'data': {'dataset': 'JaineLi/VL-MIA-image', 'subset': 'img_Flickr', 'split': 'train', 'augmentations': {'RandomResize': {'use': False, 'size': [[256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256]], 'scale': [[0.2, 0.2], [0.4, 0.4], [0.6, 0.6], [0.8, 0.8], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]], 'ratio': [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.5, 0.5], [0.75, 0.75], [1.0, 1.0], [1.25, 1.25], [1.5, 1.5]]}, 'RandomRotation': {'use': False, 'degrees': [0.1, 0.2, 0.3, 0.4, 0.5, 5, 30, 45, 60, 90]}, 'RandomAffine': {'use': False, 'degrees': [30], 'translate': [[0.1, 0.1]], 'scale': [[0.75, 1.25]]}, 'ColorJitter': {'use': False, 'brightness': [0.5], 'contrast': [0.5], 'saturation': [0.5], 'hue': [0.5]}, 'GaussianNoise': {'use': True, 'mean': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'std': [0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75]}}}, 'target_model': {'model_path': 'liuhaotian/llava-v1.5-7b', 'model_base': None, 'conv_mode': 'llava_v1', 'gpu_id': 0}, 'reference_model': {'model_path': 'liuhaotian/llava-v1.5-7b', 'model_base': 'llava-v1.5-7b', 'conv_mode': 'llava_v1'}, 'generation': {'use_augmentation': False, 'batch_size': 8, 'num_gen_tokens': 32}, 'inference': {'use_augmentation': True, 'batch_size': 8, 'test_number_of_batches': 5}, 'img_metrics': {'aug_kld': {'name': 'aug_kl_divs'}, 'max_k_renyi_1_entro': {'name': 'max_k_renyi_1_ratio', 'suffix': 'renyi_1', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'max_k_renyi_2_entro': {'name': 'max_k_renyi_2_ratio', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'max_k_renyi_05_entro': {'name': 'max_k_renyi_05_ratio', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'max_prob_gap': {'name': 'max_prob_gap'}, 'min_k_renyi_1_entro': {'name': 'min_k_renyi_1_ratio', 'suffix': 'renyi_1', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'min_k_renyi_2_entro': {'name': 'min_k_renyi_2_ratio', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'min_k_renyi_05_entro': {'name': 'min_k_renyi_05_ratio', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'mink': {'name': 'mink', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'mod_renyi_1_entro': {'name': 'modified_entropy'}, 'mod_renyi_2_entro': {'name': 'modified_renyi_2', 'alpha': 2}, 'mod_renyi_05_entro': {'name': 'modified_reny_0.5', 'alpha': 0.5}, 'renyi_1': {'name': 'renyi_1'}, 'renyi_2': {'name': 'renyi_2', 'alpha': 2}, 'renyi_05': {'name': 'renyi_0.5', 'alpha': 2}, 'renyi_05_full': {'name': 'renyi_05_full'}, 'cross_entropy_mink': {'name': 'cross_entropy_mink', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'min_k_renyi_05_kl_div': {'name': 'min_k_renyi_05_kl_div', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_1_kl_div': {'name': 'min_k_renyi_05_kl_div', 'alpha': 1, 'suffix': 'renyi_1', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_2_kl_div': {'name': 'min_k_renyi_05_kl_div', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_inf_kl_div': {'name': 'min_k_renyi_inf_kl_div', 'suffix': 'renyi_inf', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_025': {'name': 'min_k_renyi_divergence_025', 'alpha': 0.25, 'suffix': 'renyi_025', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_05': {'name': 'min_k_renyi_divergence_05', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_2': {'name': 'min_k_renyi_divergence_2', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_4': {'name': 'min_k_renyi_divergence_4', 'alpha': 4, 'suffix': 'renyi_4', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'metrics_to_use': ['min_k_renyi_05_kl_div', 'min_k_renyi_1_kl_div', 'min_k_renyi_2_kl_div', 'min_k_renyi_inf_kl_div', 'min_k_renyi_divergence_025', 'min_k_renyi_divergence_05', 'min_k_renyi_divergence_2', 'min_k_renyi_divergence_4'], 'parts': ['img'], 'get_token_labels': 1000, 'get_raw_images': 5, 'get_raw_meta_examples': 1000, 'get_raw_meta_metrics': ['ppl', 'losses'], 'get_proc_meta_examples': 1000, 'get_proc_meta_metrics': ['min_k_renyi_05_kl_div_tkn_vals', 'min_k_renyi_1_kl_div_tkn_vals', 'min_k_renyi_2_kl_div_tkn_vals', 'min_k_renyi_inf_kl_div_tkn_vals', 'min_k_renyi_divergence_025_tkn_vals', 'min_k_renyi_divergence_05_tkn_vals', 'min_k_renyi_divergence_4_tkn_vals']}, 'prompt': {'text': 'Describe this image concisely.'}, 'path': {'cache_dir': '/local/scratch/clo37/cache', 'output_dir': '/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1'}, 'wandb': {'project': 'vlm_mia', 'name': 'run_001', 'mode': 'enabled'}, 'test_run': {'test_run': False}}
+{'data': {'dataset': 'JaineLi/VL-MIA-image', 'subset': 'img_dalle', 'split': 'train', 'augmentations': {'RandomResize': {'use': False, 'size': [[256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256], [256, 256]], 'scale': [[0.2, 0.2], [0.4, 0.4], [0.6, 0.6], [0.8, 0.8], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]], 'ratio': [[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.5, 0.5], [0.75, 0.75], [1.0, 1.0], [1.25, 1.25], [1.5, 1.5]]}, 'RandomRotation': {'use': False, 'degrees': [0.1, 0.2, 0.3, 0.4, 0.5, 5, 30, 45, 60, 90]}, 'RandomAffine': {'use': False, 'degrees': [30], 'translate': [[0.1, 0.1]], 'scale': [[0.75, 1.25]]}, 'ColorJitter': {'use': False, 'brightness': [0.5], 'contrast': [0.5], 'saturation': [0.5], 'hue': [0.5]}, 'GaussianNoise': {'use': True, 'mean': [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 'std': [0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75]}}}, 'target_model': {'model_path': 'liuhaotian/llava-v1.5-7b', 'model_base': None, 'conv_mode': 'llava_v1', 'gpu_id': 0}, 'reference_model': {'model_path': 'liuhaotian/llava-v1.5-7b', 'model_base': 'llava-v1.5-7b', 'conv_mode': 'llava_v1'}, 'generation': {'use_augmentation': False, 'batch_size': 8, 'num_gen_tokens': 32}, 'inference': {'use_augmentation': True, 'batch_size': 8, 'test_number_of_batches': 5}, 'img_metrics': {'aug_kld': {'name': 'aug_kl_divs'}, 'max_k_renyi_1_entro': {'name': 'max_k_renyi_1_ratio', 'suffix': 'renyi_1', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'max_k_renyi_2_entro': {'name': 'max_k_renyi_2_ratio', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'max_k_renyi_05_entro': {'name': 'max_k_renyi_05_ratio', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'max_prob_gap': {'name': 'max_prob_gap'}, 'min_k_renyi_1_entro': {'name': 'min_k_renyi_1_ratio', 'suffix': 'renyi_1', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'min_k_renyi_2_entro': {'name': 'min_k_renyi_2_ratio', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'min_k_renyi_05_entro': {'name': 'min_k_renyi_05_ratio', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'mink': {'name': 'mink', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'mod_renyi_1_entro': {'name': 'modified_entropy'}, 'mod_renyi_2_entro': {'name': 'modified_renyi_2', 'alpha': 2}, 'mod_renyi_05_entro': {'name': 'modified_reny_0.5', 'alpha': 0.5}, 'renyi_1': {'name': 'renyi_1'}, 'renyi_2': {'name': 'renyi_2', 'alpha': 2}, 'renyi_05': {'name': 'renyi_0.5', 'alpha': 2}, 'renyi_05_full': {'name': 'renyi_05_full'}, 'cross_entropy_mink': {'name': 'cross_entropy_mink', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]}, 'min_k_renyi_05_kl_div': {'name': 'min_k_renyi_05_kl_div', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_1_kl_div': {'name': 'min_k_renyi_05_kl_div', 'alpha': 1, 'suffix': 'renyi_1', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_2_kl_div': {'name': 'min_k_renyi_05_kl_div', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_inf_kl_div': {'name': 'min_k_renyi_inf_kl_div', 'suffix': 'renyi_inf', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_025': {'name': 'min_k_renyi_divergence_025', 'alpha': 0.25, 'suffix': 'renyi_025', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_05': {'name': 'min_k_renyi_divergence_05', 'alpha': 0.5, 'suffix': 'renyi_05', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_2': {'name': 'min_k_renyi_divergence_2', 'alpha': 2, 'suffix': 'renyi_2', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'min_k_renyi_divergence_4': {'name': 'min_k_renyi_divergence_4', 'alpha': 4, 'suffix': 'renyi_4', 'ratio': [0, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9], 'augmentation_accumilator': ['avg', 'max', 'none'], 'augmentation_setting_version_accumilator': ['avg', 'max', 'none']}, 'metrics_to_use': ['min_k_renyi_05_kl_div', 'min_k_renyi_1_kl_div', 'min_k_renyi_2_kl_div', 'min_k_renyi_inf_kl_div', 'min_k_renyi_divergence_025', 'min_k_renyi_divergence_05', 'min_k_renyi_divergence_2', 'min_k_renyi_divergence_4'], 'parts': ['img'], 'get_token_labels': 1000, 'get_raw_images': 5, 'get_raw_meta_examples': 1000, 'get_raw_meta_metrics': ['ppl', 'losses'], 'get_proc_meta_examples': 1000, 'get_proc_meta_metrics': ['min_k_renyi_05_kl_div_tkn_vals', 'min_k_renyi_1_kl_div_tkn_vals', 'min_k_renyi_2_kl_div_tkn_vals', 'min_k_renyi_inf_kl_div_tkn_vals', 'min_k_renyi_divergence_025_tkn_vals', 'min_k_renyi_divergence_05_tkn_vals', 'min_k_renyi_divergence_4_tkn_vals']}, 'prompt': {'text': 'Describe this image concisely.'}, 'path': {'cache_dir': '/local/scratch/clo37/cache', 'output_dir': '/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1'}, 'wandb': {'project': 'vlm_mia', 'name': 'run_001', 'mode': 'enabled'}, 'test_run': {'test_run': True}}
 
 
 AUGMENTATIONS USED:
@@ -36,7 +48,7 @@ Requested metrics: ['min_k_renyi_05_kl_div_tkn_vals', 'min_k_renyi_1_kl_div_tkn_
           
 Loading checkpoint shards:   0%|          | 0/2 [00:00<?, ?it/s]/local/scratch/clo37/anaconda3/envs/vlm_large_mia_llava_venv/lib/python3.10/site-packages/torch/_utils.py:831: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
   return self.fget.__get__(instance, owner)()
-Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  6.36it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  7.04it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  6.92it/s]
+Loading checkpoint shards:  50%|█████     | 1/2 [00:00<00:00,  6.20it/s]Loading checkpoint shards: 100%|██████████| 2/2 [00:00<00:00,  7.70it/s]
 
           
  
@@ -49,8 +61,9 @@ Requested metrics: ['min_k_renyi_05_kl_div_tkn_vals', 'min_k_renyi_1_kl_div_tkn_
 
           
 Generating Inference and Augmentations.....
-Raw Image Indecies: [ 0  1  2  3  4  5  6  8  9 12]
-Map:   0%|          | 0/600 [00:00<?, ? examples/s]Map: 100%|██████████| 600/600 [03:54<00:00,  2.55 examples/s]Map: 100%|██████████| 600/600 [04:03<00:00,  2.46 examples/s]
+Data split img_dalle length: 592
+Raw Image Indecies: [0 1 2 3 4 5 6 7 8 9]
+Map:   0%|          | 0/592 [00:00<?, ? examples/s]Map: 100%|██████████| 592/592 [10:21<00:00,  1.05s/ examples]Map: 100%|██████████| 592/592 [10:28<00:00,  1.06s/ examples]
 Appended Desired Sample
 Appended Desired Sample
 Appended Desired Sample
@@ -62,74 +75,10 @@ Appended Desired Sample
 Appended Desired Sample
 Appended Desired Sample
 Completed. Tokens Acquired
-Raw Meta values sampled Indecies: [  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
-  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35
-  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53
-  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71
-  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89
-  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106 107
- 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125
- 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143
- 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161
- 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179
- 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197
- 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215
- 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233
- 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251
- 252 253 254 255 256 257 258 259 260 261 262 263 264 265 266 267 268 269
- 270 271 272 273 274 275 276 277 278 279 280 281 282 283 284 285 286 287
- 288 289 290 291 292 293 294 295 296 297 298 299 300 301 302 303 304 305
- 306 307 308 309 310 311 312 313 314 315 316 317 318 319 320 321 322 323
- 324 325 326 327 328 329 330 331 332 333 334 335 336 337 338 339 340 341
- 342 343 344 345 346 347 348 349 350 351 352 353 354 355 356 357 358 359
- 360 361 362 363 364 365 366 367 368 369 370 371 372 373 374 375 376 377
- 378 379 380 381 382 383 384 385 386 387 388 389 390 391 392 393 394 395
- 396 397 398 399 400 401 402 403 404 405 406 407 408 409 410 411 412 413
- 414 415 416 417 418 419 420 421 422 423 424 425 426 427 428 429 430 431
- 432 433 434 435 436 437 438 439 440 441 442 443 444 445 446 447 448 449
- 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467
- 468 469 470 471 472 473 474 475 476 477 478 479 480 481 482 483 484 485
- 486 487 488 489 490 491 492 493 494 495 496 497 498 499 500 501 502 503
- 504 505 506 507 508 509 510 511 512 513 514 515 516 517 518 519 520 521
- 522 523 524 525 526 527 528 529 530 531 532 533 534 535 536 537 538 539
- 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557
- 558 559 560 561 562 563 564 565 566 567 568 569 570 571 572 573 574 575
- 576 577 578 579 580 581 582 583 584 585 586 587 588 589 590 591 592 593
- 594 595 596 597 598 599]
-Processed Meta values sampled Indecies: [  0   1   2   3   4   5   6   7   8   9  10  11  12  13  14  15  16  17
-  18  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33  34  35
-  36  37  38  39  40  41  42  43  44  45  46  47  48  49  50  51  52  53
-  54  55  56  57  58  59  60  61  62  63  64  65  66  67  68  69  70  71
-  72  73  74  75  76  77  78  79  80  81  82  83  84  85  86  87  88  89
-  90  91  92  93  94  95  96  97  98  99 100 101 102 103 104 105 106 107
- 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125
- 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143
- 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161
- 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179
- 180 181 182 183 184 185 186 187 188 189 190 191 192 193 194 195 196 197
- 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215
- 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233
- 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251
- 252 253 254 255 256 257 258 259 260 261 262 263 264 265 266 267 268 269
- 270 271 272 273 274 275 276 277 278 279 280 281 282 283 284 285 286 287
- 288 289 290 291 292 293 294 295 296 297 298 299 300 301 302 303 304 305
- 306 307 308 309 310 311 312 313 314 315 316 317 318 319 320 321 322 323
- 324 325 326 327 328 329 330 331 332 333 334 335 336 337 338 339 340 341
- 342 343 344 345 346 347 348 349 350 351 352 353 354 355 356 357 358 359
- 360 361 362 363 364 365 366 367 368 369 370 371 372 373 374 375 376 377
- 378 379 380 381 382 383 384 385 386 387 388 389 390 391 392 393 394 395
- 396 397 398 399 400 401 402 403 404 405 406 407 408 409 410 411 412 413
- 414 415 416 417 418 419 420 421 422 423 424 425 426 427 428 429 430 431
- 432 433 434 435 436 437 438 439 440 441 442 443 444 445 446 447 448 449
- 450 451 452 453 454 455 456 457 458 459 460 461 462 463 464 465 466 467
- 468 469 470 471 472 473 474 475 476 477 478 479 480 481 482 483 484 485
- 486 487 488 489 490 491 492 493 494 495 496 497 498 499 500 501 502 503
- 504 505 506 507 508 509 510 511 512 513 514 515 516 517 518 519 520 521
- 522 523 524 525 526 527 528 529 530 531 532 533 534 535 536 537 538 539
- 540 541 542 543 544 545 546 547 548 549 550 551 552 553 554 555 556 557
- 558 559 560 561 562 563 564 565 566 567 568 569 570 571 572 573 574 575
- 576 577 578 579 580 581 582 583 584 585 586 587 588 589 590 591 592 593
- 594 595 596 597 598 599]
+Raw Meta values sampled Indecies: [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+ 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39]
+Processed Meta values sampled Indecies: [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+ 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39]
 
           
  
@@ -156,882 +105,6 @@ Saved image_sampled_indicies to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1
  
 
           
-Proc Meta Sample Map: defaultdict(<class 'list'>, {0: [0, 1, 2, 3, 4, 5, 6, 7], 1: [0, 1, 2, 3, 4, 5, 6, 7], 2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [0, 1, 2, 3, 4, 5, 6, 7], 4: [0, 1, 2, 3, 4, 5, 6, 7], 5: [0, 1, 2, 3, 4, 5, 6, 7], 6: [0, 1, 2, 3, 4, 5, 6, 7], 7: [0, 1, 2, 3, 4, 5, 6, 7], 8: [0, 1, 2, 3, 4, 5, 6, 7], 9: [0, 1, 2, 3, 4, 5, 6, 7], 10: [0, 1, 2, 3, 4, 5, 6, 7], 11: [0, 1, 2, 3, 4, 5, 6, 7], 12: [0, 1, 2, 3, 4, 5, 6, 7], 13: [0, 1, 2, 3, 4, 5, 6, 7], 14: [0, 1, 2, 3, 4, 5, 6, 7], 15: [0, 1, 2, 3, 4, 5, 6, 7], 16: [0, 1, 2, 3, 4, 5, 6, 7], 17: [0, 1, 2, 3, 4, 5, 6, 7], 18: [0, 1, 2, 3, 4, 5, 6, 7], 19: [0, 1, 2, 3, 4, 5, 6, 7], 20: [0, 1, 2, 3, 4, 5, 6, 7], 21: [0, 1, 2, 3, 4, 5, 6, 7], 22: [0, 1, 2, 3, 4, 5, 6, 7], 23: [0, 1, 2, 3, 4, 5, 6, 7], 24: [0, 1, 2, 3, 4, 5, 6, 7], 25: [0, 1, 2, 3, 4, 5, 6, 7], 26: [0, 1, 2, 3, 4, 5, 6, 7], 27: [0, 1, 2, 3, 4, 5, 6, 7], 28: [0, 1, 2, 3, 4, 5, 6, 7], 29: [0, 1, 2, 3, 4, 5, 6, 7], 30: [0, 1, 2, 3, 4, 5, 6, 7], 31: [0, 1, 2, 3, 4, 5, 6, 7], 32: [0, 1, 2, 3, 4, 5, 6, 7], 33: [0, 1, 2, 3, 4, 5, 6, 7], 34: [0, 1, 2, 3, 4, 5, 6, 7], 35: [0, 1, 2, 3, 4, 5, 6, 7], 36: [0, 1, 2, 3, 4, 5, 6, 7], 37: [0, 1, 2, 3, 4, 5, 6, 7], 38: [0, 1, 2, 3, 4, 5, 6, 7], 39: [0, 1, 2, 3, 4, 5, 6, 7], 40: [0, 1, 2, 3, 4, 5, 6, 7], 41: [0, 1, 2, 3, 4, 5, 6, 7], 42: [0, 1, 2, 3, 4, 5, 6, 7], 43: [0, 1, 2, 3, 4, 5, 6, 7], 44: [0, 1, 2, 3, 4, 5, 6, 7], 45: [0, 1, 2, 3, 4, 5, 6, 7], 46: [0, 1, 2, 3, 4, 5, 6, 7], 47: [0, 1, 2, 3, 4, 5, 6, 7], 48: [0, 1, 2, 3, 4, 5, 6, 7], 49: [0, 1, 2, 3, 4, 5, 6, 7], 50: [0, 1, 2, 3, 4, 5, 6, 7], 51: [0, 1, 2, 3, 4, 5, 6, 7], 52: [0, 1, 2, 3, 4, 5, 6, 7], 53: [0, 1, 2, 3, 4, 5, 6, 7], 54: [0, 1, 2, 3, 4, 5, 6, 7], 55: [0, 1, 2, 3, 4, 5, 6, 7], 56: [0, 1, 2, 3, 4, 5, 6, 7], 57: [0, 1, 2, 3, 4, 5, 6, 7], 58: [0, 1, 2, 3, 4, 5, 6, 7], 59: [0, 1, 2, 3, 4, 5, 6, 7], 60: [0, 1, 2, 3, 4, 5, 6, 7], 61: [0, 1, 2, 3, 4, 5, 6, 7], 62: [0, 1, 2, 3, 4, 5, 6, 7], 63: [0, 1, 2, 3, 4, 5, 6, 7], 64: [0, 1, 2, 3, 4, 5, 6, 7], 65: [0, 1, 2, 3, 4, 5, 6, 7], 66: [0, 1, 2, 3, 4, 5, 6, 7], 67: [0, 1, 2, 3, 4, 5, 6, 7], 68: [0, 1, 2, 3, 4, 5, 6, 7], 69: [0, 1, 2, 3, 4, 5, 6, 7], 70: [0, 1, 2, 3, 4, 5, 6, 7], 71: [0, 1, 2, 3, 4, 5, 6, 7], 72: [0, 1, 2, 3, 4, 5, 6, 7], 73: [0, 1, 2, 3, 4, 5, 6, 7], 74: [0, 1, 2, 3, 4, 5, 6, 7]})
-Raw Meta Sample Map: defaultdict(<class 'list'>, {0: [0, 1, 2, 3, 4, 5, 6, 7], 1: [0, 1, 2, 3, 4, 5, 6, 7], 2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [0, 1, 2, 3, 4, 5, 6, 7], 4: [0, 1, 2, 3, 4, 5, 6, 7], 5: [0, 1, 2, 3, 4, 5, 6, 7], 6: [0, 1, 2, 3, 4, 5, 6, 7], 7: [0, 1, 2, 3, 4, 5, 6, 7], 8: [0, 1, 2, 3, 4, 5, 6, 7], 9: [0, 1, 2, 3, 4, 5, 6, 7], 10: [0, 1, 2, 3, 4, 5, 6, 7], 11: [0, 1, 2, 3, 4, 5, 6, 7], 12: [0, 1, 2, 3, 4, 5, 6, 7], 13: [0, 1, 2, 3, 4, 5, 6, 7], 14: [0, 1, 2, 3, 4, 5, 6, 7], 15: [0, 1, 2, 3, 4, 5, 6, 7], 16: [0, 1, 2, 3, 4, 5, 6, 7], 17: [0, 1, 2, 3, 4, 5, 6, 7], 18: [0, 1, 2, 3, 4, 5, 6, 7], 19: [0, 1, 2, 3, 4, 5, 6, 7], 20: [0, 1, 2, 3, 4, 5, 6, 7], 21: [0, 1, 2, 3, 4, 5, 6, 7], 22: [0, 1, 2, 3, 4, 5, 6, 7], 23: [0, 1, 2, 3, 4, 5, 6, 7], 24: [0, 1, 2, 3, 4, 5, 6, 7], 25: [0, 1, 2, 3, 4, 5, 6, 7], 26: [0, 1, 2, 3, 4, 5, 6, 7], 27: [0, 1, 2, 3, 4, 5, 6, 7], 28: [0, 1, 2, 3, 4, 5, 6, 7], 29: [0, 1, 2, 3, 4, 5, 6, 7], 30: [0, 1, 2, 3, 4, 5, 6, 7], 31: [0, 1, 2, 3, 4, 5, 6, 7], 32: [0, 1, 2, 3, 4, 5, 6, 7], 33: [0, 1, 2, 3, 4, 5, 6, 7], 34: [0, 1, 2, 3, 4, 5, 6, 7], 35: [0, 1, 2, 3, 4, 5, 6, 7], 36: [0, 1, 2, 3, 4, 5, 6, 7], 37: [0, 1, 2, 3, 4, 5, 6, 7], 38: [0, 1, 2, 3, 4, 5, 6, 7], 39: [0, 1, 2, 3, 4, 5, 6, 7], 40: [0, 1, 2, 3, 4, 5, 6, 7], 41: [0, 1, 2, 3, 4, 5, 6, 7], 42: [0, 1, 2, 3, 4, 5, 6, 7], 43: [0, 1, 2, 3, 4, 5, 6, 7], 44: [0, 1, 2, 3, 4, 5, 6, 7], 45: [0, 1, 2, 3, 4, 5, 6, 7], 46: [0, 1, 2, 3, 4, 5, 6, 7], 47: [0, 1, 2, 3, 4, 5, 6, 7], 48: [0, 1, 2, 3, 4, 5, 6, 7], 49: [0, 1, 2, 3, 4, 5, 6, 7], 50: [0, 1, 2, 3, 4, 5, 6, 7], 51: [0, 1, 2, 3, 4, 5, 6, 7], 52: [0, 1, 2, 3, 4, 5, 6, 7], 53: [0, 1, 2, 3, 4, 5, 6, 7], 54: [0, 1, 2, 3, 4, 5, 6, 7], 55: [0, 1, 2, 3, 4, 5, 6, 7], 56: [0, 1, 2, 3, 4, 5, 6, 7], 57: [0, 1, 2, 3, 4, 5, 6, 7], 58: [0, 1, 2, 3, 4, 5, 6, 7], 59: [0, 1, 2, 3, 4, 5, 6, 7], 60: [0, 1, 2, 3, 4, 5, 6, 7], 61: [0, 1, 2, 3, 4, 5, 6, 7], 62: [0, 1, 2, 3, 4, 5, 6, 7], 63: [0, 1, 2, 3, 4, 5, 6, 7], 64: [0, 1, 2, 3, 4, 5, 6, 7], 65: [0, 1, 2, 3, 4, 5, 6, 7], 66: [0, 1, 2, 3, 4, 5, 6, 7], 67: [0, 1, 2, 3, 4, 5, 6, 7], 68: [0, 1, 2, 3, 4, 5, 6, 7], 69: [0, 1, 2, 3, 4, 5, 6, 7], 70: [0, 1, 2, 3, 4, 5, 6, 7], 71: [0, 1, 2, 3, 4, 5, 6, 7], 72: [0, 1, 2, 3, 4, 5, 6, 7], 73: [0, 1, 2, 3, 4, 5, 6, 7], 74: [0, 1, 2, 3, 4, 5, 6, 7]})
-Running inference:   0%|          | 0/75 [00:00<?, ?batch/s]Running inference:   1%|▏         | 1/75 [08:27<10:26:13, 507.75s/batch]Running inference:   3%|▎         | 2/75 [11:53<6:41:33, 330.05s/batch] Running inference:   4%|▍         | 3/75 [15:02<5:18:52, 265.73s/batch]Running inference:   5%|▌         | 4/75 [17:32<4:20:17, 219.96s/batch]Running inference:   7%|▋         | 5/75 [20:39<4:02:54, 208.20s/batch]Running inference:   8%|▊         | 6/75 [23:06<3:35:26, 187.34s/batch]Running inference:   9%|▉         | 7/75 [26:14<3:32:33, 187.55s/batch]Running inference:  11%|█         | 8/75 [28:43<3:15:36, 175.17s/batch]Running inference:  12%|█▏        | 9/75 [31:50<3:16:49, 178.93s/batch]Running inference:  13%|█▎        | 10/75 [34:18<3:03:38, 169.52s/batch]Running inference:  15%|█▍        | 11/75 [37:27<3:06:58, 175.29s/batch]Running inference:  16%|█▌        | 12/75 [39:54<2:55:10, 166.84s/batch]Running inference:  17%|█▋        | 13/75 [43:01<2:58:41, 172.92s/batch]Running inference:  19%|█▊        | 14/75 [45:30<2:48:15, 165.50s/batch]Running inference:  20%|██        | 15/75 [48:37<2:51:58, 171.98s/batch]Running inference:  21%|██▏       | 16/75 [51:05<2:42:00, 164.75s/batch]Running inference:  23%|██▎       | 17/75 [54:12<2:45:58, 171.70s/batch]Running inference:  24%|██▍       | 18/75 [56:40<2:36:20, 164.57s/batch]Running inference:  25%|██▌       | 19/75 [59:48<2:40:09, 171.60s/batch]Running inference:  27%|██▋       | 20/75 [1:02:16<2:30:48, 164.52s/batch]Running inference:  28%|██▊       | 21/75 [1:05:24<2:34:13, 171.36s/batch]Running inference:  29%|██▉       | 22/75 [1:07:52<2:25:12, 164.39s/batch]Running inference:  31%|███       | 23/75 [1:11:00<2:28:47, 171.68s/batch]Running inference:  32%|███▏      | 24/75 [1:13:27<2:19:25, 164.04s/batch]Running inference:  33%|███▎      | 25/75 [1:16:34<2:22:33, 171.07s/batch]Running inference:  35%|███▍      | 26/75 [1:19:02<2:14:03, 164.16s/batch]Running inference:  36%|███▌      | 27/75 [1:22:10<2:16:54, 171.14s/batch]Running inference:  37%|███▋      | 28/75 [1:24:36<2:08:20, 163.84s/batch]Running inference:  39%|███▊      | 29/75 [1:27:42<2:10:42, 170.48s/batch]Running inference:  40%|████      | 30/75 [1:30:11<2:03:02, 164.05s/batch]Running inference:  41%|████▏     | 31/75 [1:33:18<2:05:15, 170.81s/batch]Running inference:  43%|████▎     | 32/75 [1:35:45<1:57:20, 163.74s/batch]Running inference:  44%|████▍     | 33/75 [1:38:51<1:59:20, 170.48s/batch]Running inference:  45%|████▌     | 34/75 [1:41:19<1:51:51, 163.69s/batch]Running inference:  47%|████▋     | 35/75 [1:44:28<1:54:03, 171.10s/batch]Running inference:  48%|████▊     | 36/75 [1:46:58<1:47:12, 164.94s/batch]Running inference:  49%|████▉     | 37/75 [1:50:06<1:48:42, 171.64s/batch]Running inference:  51%|█████     | 38/75 [1:52:34<1:41:36, 164.76s/batch]Running inference:  52%|█████▏    | 39/75 [1:55:42<1:42:58, 171.63s/batch]Running inference:  53%|█████▎    | 40/75 [1:58:09<1:35:53, 164.37s/batch]Running inference:  55%|█████▍    | 41/75 [2:01:18<1:37:12, 171.54s/batch]Running inference:  56%|█████▌    | 42/75 [2:03:46<1:30:35, 164.70s/batch]Running inference:  57%|█████▋    | 43/75 [2:06:56<1:31:54, 172.31s/batch]Running inference:  59%|█████▊    | 44/75 [2:09:26<1:25:27, 165.39s/batch]Running inference:  60%|██████    | 45/75 [2:12:34<1:26:09, 172.33s/batch]Running inference:  61%|██████▏   | 46/75 [2:15:04<1:20:03, 165.63s/batch]Running inference:  63%|██████▎   | 47/75 [2:18:11<1:20:14, 171.94s/batch]Running inference:  64%|██████▍   | 48/75 [2:20:39<1:14:09, 164.79s/batch]Running inference:  65%|██████▌   | 49/75 [2:23:48<1:14:35, 172.14s/batch]Running inference:  67%|██████▋   | 50/75 [2:26:20<1:09:11, 166.05s/batch]Running inference:  68%|██████▊   | 51/75 [2:29:27<1:08:57, 172.39s/batch]Running inference:  69%|██████▉   | 52/75 [2:31:55<1:03:13, 164.95s/batch]Running inference:  71%|███████   | 53/75 [2:35:04<1:03:07, 172.16s/batch]Running inference:  72%|███████▏  | 54/75 [2:37:37<58:13, 166.36s/batch]  Running inference:  73%|███████▎  | 55/75 [2:40:50<58:09, 174.47s/batch]Running inference:  75%|███████▍  | 56/75 [2:43:22<53:08, 167.84s/batch]Running inference:  76%|███████▌  | 57/75 [2:46:31<52:10, 173.94s/batch]Running inference:  77%|███████▋  | 58/75 [2:48:59<47:06, 166.24s/batch]Running inference:  79%|███████▊  | 59/75 [2:52:07<46:04, 172.78s/batch]Running inference:  80%|████████  | 60/75 [2:54:36<41:25, 165.72s/batch]Running inference:  81%|████████▏ | 61/75 [2:57:44<40:13, 172.38s/batch]Running inference:  83%|████████▎ | 62/75 [3:00:12<35:46, 165.11s/batch]Running inference:  84%|████████▍ | 63/75 [3:03:22<34:30, 172.54s/batch]Running inference:  85%|████████▌ | 64/75 [3:05:52<30:22, 165.70s/batch]Running inference:  87%|████████▋ | 65/75 [3:08:59<28:42, 172.26s/batch]Running inference:  88%|████████▊ | 66/75 [3:11:27<24:42, 164.74s/batch]Running inference:  89%|████████▉ | 67/75 [3:14:34<22:51, 171.39s/batch]Running inference:  91%|█████████ | 68/75 [3:17:00<19:06, 163.85s/batch]Running inference:  92%|█████████▏| 69/75 [3:20:09<17:09, 171.51s/batch]Running inference:  93%|█████████▎| 70/75 [3:22:38<13:43, 164.65s/batch]Running inference:  95%|█████████▍| 71/75 [3:25:47<11:27, 171.91s/batch]Running inference:  96%|█████████▌| 72/75 [3:28:14<08:14, 164.67s/batch]Running inference:  97%|█████████▋| 73/75 [3:31:23<05:43, 171.80s/batch]Running inference:  99%|█████████▊| 74/75 [3:33:50<02:44, 164.55s/batch]Running inference: 100%|██████████| 75/75 [3:36:59<00:00, 171.65s/batch]Running inference: 100%|██████████| 75/75 [3:36:59<00:00, 173.59s/batch]
-
-
-Running Batch: 0
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 1
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 2
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 3
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 4
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 5
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 6
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 7
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 8
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 9
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 10
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 11
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 12
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 13
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 14
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 15
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 16
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 17
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 18
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 19
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 20
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 21
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 22
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 23
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 24
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 25
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 26
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 27
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 28
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 29
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 30
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 31
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 32
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 33
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 34
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 35
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 36
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 37
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 38
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 39
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 40
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 41
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 42
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 43
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 44
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 45
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 46
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 47
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 48
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 49
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 50
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 51
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 52
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 53
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 54
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 55
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 56
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 57
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 58
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 59
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 60
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 61
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 62
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 63
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 64
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 65
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 66
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 67
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 68
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 69
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 70
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 71
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 72
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 73
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-
-Running Batch: 74
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-KL-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-Renyi-Div Metric
-
-          
- 
-
-          ==================================================
-                        INFERENCE COMPLETE
-          ==================================================
-          
- 
-
-          
-Saving preds to json....
-Saved preds to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/preds.json
-Saving token labels to json...
-Saved all_proc_meta_sampled_examples to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/all_proc_meta_sampled_examples.json
-Saved class_labels to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/class_labels.json
-Saved token_labels to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/token_labels.json
-Saving raw meta values to pt......
-Saved all_raw_meta_sampled_examples to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/all_raw_meta_sampled_examples.json
-Saved class_labels to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/class_labels.json
-Saved raw_meta_values to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/raw_meta_values.pt
-Saving processed meta values to json....
-Saved all_proc_meta_sampled_examples to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/all_proc_meta_sampled_examples.json
-Saved class_labels to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/class_labels.json
-Saved processed_meta_values to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/processed_meta_values.json
-
-          
- 
-
-          ==================================================
-                        BEGINNING EVALUATION
-          ==================================================
-          
- 
-
-          
-Saving evaluation results.....
-Saved auc to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/auc.json
-Saved acc to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/acc.json
-Saved auc_low to /home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1/auc_low.json
-
-          
- 
-
-          ==================================================
-                            RUN COMPLETED
-          ==================================================
-          
- 
-
-          
+Proc Meta Sample Map: defaultdict(<class 'list'>, {0: [0, 1, 2, 3, 4, 5, 6, 7], 1: [0, 1, 2, 3, 4, 5, 6, 7], 2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [0, 1, 2, 3, 4, 5, 6, 7], 4: [0, 1, 2, 3, 4, 5, 6, 7]})
+Raw Meta Sample Map: defaultdict(<class 'list'>, {0: [0, 1, 2, 3, 4, 5, 6, 7], 1: [0, 1, 2, 3, 4, 5, 6, 7], 2: [0, 1, 2, 3, 4, 5, 6, 7], 3: [0, 1, 2, 3, 4, 5, 6, 7], 4: [0, 1, 2, 3, 4, 5, 6, 7]})
+Running inference:   0%|          | 0/74 [00:00<?, ?batch/s]

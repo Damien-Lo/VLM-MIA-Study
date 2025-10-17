@@ -90,7 +90,14 @@ def main(cfg):
           \n \n
           '''
           )
-    
+
+    if cfg.data.subset == "img_Flickr":
+        descriptions = flickr_sentences
+    elif cfg.data.subset == "img_dalle":
+        descriptions = dalle_sentences
+    else:
+        raise ValueError(f"Unexpected subset {cfg.data.subset}")
+
     print("Generating Inference and Augmentations.....")
     if cfg.target_model.type == "llava":
         model, tokenizer, image_processor, conv_mode = target_model
