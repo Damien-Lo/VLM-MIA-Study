@@ -1,6 +1,7 @@
 import numpy as np
 from collections import defaultdict
 import torch
+import sys
 
 """
 Our proposed metric computation functions are listed here
@@ -165,10 +166,29 @@ def renyi_kl_div_mink(renyi_probs, cfg, eps=1e-12):
                 aug_log = np.log(torch.stack(aug_probs).cpu().numpy() + eps)
 
                 kl = kl_div_per_token(org, org_log, aug_log) # KL: 1D vector
+            
+                print(f"""
+                        ==================
+                        Sample: {sample_idx}
+                        ==================
+                        """)
+                print("Nan Found")
+                print(kl)
+                print("\n org")
+                print(org)
+                print("\n org_log")
+                print(org_log)
+                print("\n aug_probs")
+                print(aug_probs)
+                print("\n aug_log")
+                print(aug_log)
+                print("Exiting")
                 
                 # Append Values to Respective Data Storage
                 all_raw_metric_values[sample_idx].append(kl.tolist())
                 all_samples_in_setting_values.append(kl)
+                
+            sys.exit()
                 
             all_settings_in_aug.append(all_samples_in_setting_values)
             # all_settings_in_aug [setting, sample, kld(1D)]

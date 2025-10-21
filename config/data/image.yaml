@@ -1,5 +1,8 @@
 dataset: "JaineLi/VL-MIA-image"
 subset: "img_Flickr"
+member_subset: "img_Flickr"
+nonmember_subset: "img_Flickr"
+desc_data_root_path: "/home/clo37/priv/VLM-MIA-Study/gen_descriptions"
 split: train
 augmentations: 
   RandomResize:

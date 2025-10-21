@@ -295,7 +295,7 @@ def mod_infer_batch(model, batch, tokenizer, parts, use_augmentation):
         for _input_ids, _logits, _attention_mask, _prompt_0, _prompt_1, _desc_shape \
             in zip(input_ids, logits, attention_masks, prompt_0, prompt_1, desc_shape):
 
-            _img_loss_slice, _img_slice, _inst_desc, _inst, _desc = get_parts_slices(_prompt_0, _prompt_1, _desc_shape)
+            _img_loss_slice, _img_slice, _inst_desc, _inst, _desc, _img_inst_desc = get_parts_slices(_prompt_0, _prompt_1, _desc_shape)
             _img_loss_slices = _logits[_img_loss_slice, :]
             _img_target = torch.nn.functional.softmax(_img_loss_slices, dim=-1)
             _max_indices = torch.argmax(_img_target, dim=-1)
@@ -312,12 +312,14 @@ def mod_infer_batch(model, batch, tokenizer, parts, use_augmentation):
                     target_parts[p] = {"input_ids": list(), "probabilities": list(), "log_probabilities": list()}
                 if p == "img":
                     _slice = _img_slice
-                elif p == "inst_desp":
+                elif p == "inst_desc":
                     _slice = _inst_desc
                 elif p == "inst":
                     _slice = _inst
-                elif p == "desp":
+                elif p == "desc":
                     _slice = _desc
+                elif p == "img_inst_desc":
+                    _slice = _img_inst_desc
                 else:
                     raise ValueError(f"Not supported goal {p}")
 

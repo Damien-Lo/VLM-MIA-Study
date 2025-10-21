@@ -9,7 +9,7 @@ model:
   low_resource: False
   prompt_path: "minigpt/prompts/alignment.txt"
   # prompt_template: '[INST] {} [/INST] '
-  ckpt: '/local/scratch/hlee959/2025_vlm_mia/minigpt-4/pretrained_weights/pretrained_minigpt4_llama2_7b.pth'
+  ckpt: '/local/scratch/clo37/models/minigpt4/pretrained_minigpt4_llama2_7b.pth'
 
 gpu_id: 0
 

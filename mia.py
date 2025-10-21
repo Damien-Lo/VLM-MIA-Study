@@ -16,7 +16,7 @@ from src.inference import inference
 from src.data import get_mod_infer_data
 from src.data import get_generation_data
 from src.model import load_target_model
-from src.misc import save_to_json, save_to_pt
+from src.misc import save_to_json, save_to_pt, save_run_meta, build_descriptions_dataset
 from textwrap import dedent
 
 @hydra.main(version_base=None, config_path="./config", config_name="run_img")
@@ -31,7 +31,7 @@ def main(cfg):
           '''
           )
     
-    if cfg.test_run.test_run:
+    if cfg.job_meta_params.test_run:
         print('''
           \n \n
           ==================================================
@@ -61,6 +61,8 @@ def main(cfg):
     if cfg.img_metrics.get_proc_meta_examples > 0:
         print(f"Requested metrics: {cfg.img_metrics.get_proc_meta_metrics} of first {cfg.img_metrics.get_proc_meta_examples} of each class")
         
+    save_run_meta(cfg)
+        
         
     print('''
           \n \n
@@ -71,15 +73,16 @@ def main(cfg):
           )
 
     # Load the target model
-    target_model = load_target_model(@)
+    target_model = load_target_model(cfg)
 
     # Generation data
     text = cfg.prompt.text
-    gen_path = os.path.join(os.getcwd(), "gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "sentences.json")
-    with open(gen_path, 'r') as f:
-        gen_data = json.load(f)
-    descriptions = gen_data["sentences"]
-
+    # gen_path = os.path.join(os.getcwd(), "gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "sentences.json")
+    # gen_path = os.path.join('/home/clo37/priv/VLM-MIA-Study', "gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "sentences.json")
+    # with open(gen_path, 'r') as f:
+    #     gen_data = json.load(f)
+    # descriptions = gen_data["sentences"]
+    member_idxs, nonmember_idxs, descriptions = build_descriptions_dataset(cfg)
     
     # If we want to get meta values and labels for some samples (first x members and nonmembers) find the indecies these samples live
     print('''
@@ -94,16 +97,16 @@ def main(cfg):
     print("Generating Inference and Augmentations.....")
     if cfg.target_model.type == "llava":
         model, tokenizer, image_processor, conv_mode = target_model
-        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions, tokenizer, image_processor, model.config, conv_mode)
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, member_idxs, nonmember_idxs, descriptions, model.config, tokenizer, image_processor, conv_mode)
     elif cfg.target_model.type == "minigpt":
-        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions)
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, member_idxs, nonmember_idxs, descriptions)
     proc_meta_vaues_sampled_indices = list()
     raw_meta_vaues_sampled_indices = list()
     class_labels = mod_infer_data["label"]
 
     print("class_labels", type(class_labels))
     
-    if cfg.test_run.test_run:
+    if cfg.job_meta_params.test_run:
         class_labels = class_labels[: (cfg.inference.batch_size * cfg.inference.test_number_of_batches)]
     
 
@@ -122,6 +125,7 @@ def main(cfg):
     print("Completed. Tokens Acquired")
     
     print(f"Raw Meta values sampled Indecies: {raw_meta_vaues_sampled_indices}")
+    print(f"Type: {type(raw_meta_vaues_sampled_indices[0])}")
     print(f"Processed Meta values sampled Indecies: {proc_meta_vaues_sampled_indices}")
     
     
@@ -166,7 +170,7 @@ def main(cfg):
     
     if cfg.target_model.type == "llava":
         model, tokenizer, image_processor, conv_mode = target_model
-        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg)
+        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg, tokenizer, image_processor)
     elif cfg.target_model.type == "minigpt":
         model, vis_encoder, chat_state = target_model
         gpu_id = model.device.index if hasattr(model, "device") and hasattr(model.device, "index") else 0

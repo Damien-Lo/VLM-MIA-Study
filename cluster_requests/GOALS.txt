@@ -1,5 +1,4 @@
-1. Large range for rotation
-2. Large range for randomresizecrop
-2. Demystify reny_inf normalisation
-3. Get losses for confidence of model
-4. 
+1. Test Aggregation for a single std range (start with std=2.5)
+2. Can we deside the threshold based on a small dataset of either just members or non-members
+3. Find another "normal" dataset (replace dalle non-member)
+4. Do description only

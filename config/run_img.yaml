@@ -8,7 +8,7 @@ defaults:
   - prompt: image
   - path: path
   - wandb : wandb
-  - test_run: test_run
+  - job_meta_params: job_meta_params
 
 
 

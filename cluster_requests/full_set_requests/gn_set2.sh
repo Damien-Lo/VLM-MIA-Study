@@ -9,26 +9,26 @@
 
 # Load environment
 source ~/.bashrc
-conda activate vlm_large_mia_llava_venv
+conda activate vlm_mia_llava_minigpt
 
 
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
 
 python /home/clo37/priv/VLM-MIA-Study/mia.py \
-    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/LatestResults/full_results/gn_set2 \
-    img_metrics.parts=["img"] \
-\
-    img_metrics.metrics_to_use='["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"]' \
-\
+    job_meta_params.description="Running inst_desc for all levels of gaussian noise on flickr with llava set_2" \
+    \
+    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/results/2025_10_17/gn_set2 \
+    \
+    target_model="llava" \
+    data.subset='img_Flickr'\
+    img_metrics.parts=["inst_desc"] \
+    img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"] \
+    \
+    img_metrics.get_proc_meta_values=1000 \
     img_metrics.get_token_labels=1000 \
     img_metrics.get_raw_images=5 \
-\
-    img_metrics.get_raw_meta_examples=1000 \
-    img_metrics.get_raw_meta_metrics='["losses"]'\
-\
-    img_metrics.get_proc_meta_examples=1000 \
-    img_metrics.get_proc_meta_metrics='["min_k_renyi_05_kl_div_tkn_vals","min_k_renyi_1_kl_div_tkn_vals","min_k_renyi_2_kl_div_tkn_vals","min_k_renyi_inf_kl_div_tkn_vals","min_k_renyi_divergence_025_tkn_vals","min_k_renyi_divergence_05_tkn_vals","min_k_renyi_divergence_4_tkn_vals"]'\
-\
+    img_metrics.get_raw_meta_values=1000 \
+    \
     data.augmentations.RandomResize.use=false \
     data.augmentations.RandomResize.size='[[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256]]' \
     data.augmentations.RandomResize.scale='[[0.2,0.2],[0.4,0.4],[0.6,0.6],[0.8,0.8],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0]]' \
@@ -37,7 +37,7 @@ python /home/clo37/priv/VLM-MIA-Study/mia.py \
     data.augmentations.RandomRotation.degrees='[0.1,0.2,0.3,0.4,0.5,5,30,45,60,90]' \
     data.augmentations.GaussianNoise.use=true \
     data.augmentations.GaussianNoise.mean='[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]' \
-    data.augmentations.GaussianNoise.std='[0.01,0.025,0.05,0.075,0.1,0.25,0.5,0.75]' \
+    data.augmentations.GaussianNoise.std='[0.0075,0.01,0.025,0.05,0.075,0.1,0.25,0.5]' \
     data.augmentations.RandomAffine.use=false \
     data.augmentations.ColorJitter.use=false\
 

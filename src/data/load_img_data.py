@@ -4,7 +4,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 from datasets import Dataset
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from src.data.augmentations import get_augmentations
 from torchvision import transforms
 import numpy as np
@@ -105,7 +105,7 @@ def get_generation_data(cfg, model_type, text, tokenizer=None, image_processor=N
 
     return _dataset
 
-def get_mod_infer_data(cfg, text, descriptions, model_config=None, tokenizer=None, image_processor=None, conv_mode=None):
+def get_mod_infer_data(cfg, text, member_idxs, nonmember_idxs, descriptions, model_config=None, tokenizer=None, image_processor=None, conv_mode=None):
     """
     cfg :  dataset config
     descriptions: generated responses
@@ -118,6 +118,12 @@ def get_mod_infer_data(cfg, text, descriptions, model_config=None, tokenizer=Non
                           name=cfg.data.subset,
                           split=cfg.data.split,
                           cache_dir=cfg.path.cache_dir)
+    
+    # TODO: Split the img data so that it takes the member and nonmember images from the respective datasets
+    # _member_dataset = load_dataset(path=cfg.data.dataset,
+    #                     name=cfg.data.subset,
+    #                     split=cfg.data.split,
+    #                     cache_dir=cfg.path.cache_dir)
 
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
     _dataset = _dataset.add_column("desc", descriptions)

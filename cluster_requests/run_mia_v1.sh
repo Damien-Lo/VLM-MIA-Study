@@ -9,16 +9,18 @@
 
 # Load environment
 source ~/.bashrc
-conda activate vlm_large_mia_llava_venv
+conda activate vlm_mia_llava_minigpt
 
 
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
 
 python /home/clo37/priv/VLM-MIA-Study/mia.py \
-    target_model.type="minigpt" \
+    job_meta_params.description="Running inst_desc for all levels of gaussian noise on flickr with llava" \
+    target_model="llava" \
+    data.subset='img_Flickr'\
+    img_metrics.parts=["inst_desc"] \
     img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"] \
-    img_metrics.parts=["img"] \
-    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/LatestResults/2025_09_24_09-27 \
+    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/results/2025_10_17 \
     img_metrics.get_proc_meta_values=1000 \
     img_metrics.get_token_labels=1000 \
     img_metrics.get_raw_images=5 \
