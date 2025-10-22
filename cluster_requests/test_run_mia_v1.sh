@@ -14,12 +14,12 @@ conda activate vlm_large_mia_llava_venv
 
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
 python /home/clo37/priv/VLM-MIA-Study/mia.py \
-    test_run.test_run=true \
+    test_run.test_run=false \
 \
-    path.output_dir=/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1 \
+    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/test_results/TEST_MIA1 \
     path.cache_dir=/local/scratch/clo37/cache \
 \
-    data.subset='img_dalle' \
+    data.subset='img_Flickr' \
     img_metrics.parts=["img"] \
     img_metrics.metrics_to_use='["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"]' \
 \
@@ -27,7 +27,7 @@ python /home/clo37/priv/VLM-MIA-Study/mia.py \
     img_metrics.get_raw_images=5 \
 \
     img_metrics.get_raw_meta_examples=1000 \
-    img_metrics.get_raw_meta_metrics='["ppl","losses"]'\
+    img_metrics.get_raw_meta_metrics='["losses"]'\
 \
     img_metrics.get_proc_meta_examples=1000 \
     img_metrics.get_proc_meta_metrics='["min_k_renyi_05_kl_div_tkn_vals","min_k_renyi_1_kl_div_tkn_vals","min_k_renyi_2_kl_div_tkn_vals","min_k_renyi_inf_kl_div_tkn_vals","min_k_renyi_divergence_025_tkn_vals","min_k_renyi_divergence_05_tkn_vals","min_k_renyi_divergence_4_tkn_vals"]'\
@@ -40,7 +40,7 @@ python /home/clo37/priv/VLM-MIA-Study/mia.py \
     data.augmentations.RandomRotation.degrees='[0.1,0.2,0.3,0.4,0.5,5,30,45,60,90]' \
     data.augmentations.GaussianNoise.use=true \
     data.augmentations.GaussianNoise.mean='[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]' \
-    data.augmentations.GaussianNoise.std='[0.01,0.025,0.05,0.075,0.1,0.25,0.5,0.75]' \
+    data.augmentations.GaussianNoise.std='[1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0]' \
     data.augmentations.RandomAffine.use=false \
     data.augmentations.ColorJitter.use=false\
 
