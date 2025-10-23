@@ -9,29 +9,35 @@
 
 # Load environment
 source ~/.bashrc
-conda activate vlm_large_mia_llava_venv
-
+conda activate vlm_mia_latest_venv
 
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
+
 python /home/clo37/priv/VLM-MIA-Study/mia.py \
-    test_run.test_run=false \
-\
-    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/test_results/TEST_MIA1 \
-    path.cache_dir=/local/scratch/clo37/cache \
-\
-    data.subset='img_Flickr' \
+    job_meta_params.test_run=false \
+    job_meta_params.description="Test Run 1 with intergration testing coco_members and flickr_nonmembers" \
+    \
+    path.output_dir=/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1 \
+    \
+    target_model="llava-v1.5-7b" \
+    \
+    data.member_dataset='coco_2014' \
+    data.member_subset='/local/scratch/clo37/datasets/LLaVA-Instruct-150K/img_coco/member_dataset/member_dataset.arrow' \
+    data.member_desc_path='/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/coco_2024/member_sentences.json' \
+    data.nonmember_dataset='JaineLi/VL-MIA-image' \
+    data.nonmember_subset='img_Flickr' \
+    data.nonmember_desc_path='/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/img_Flickr/nonmember_sentences.json' \
+    \
     img_metrics.parts=["img"] \
-    img_metrics.metrics_to_use='["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"]' \
-\
+    img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"] \
+    img_metrics.get_raw_meta_metrics=['losses'] \
+    img_metrics.get_proc_meta_metrics=['min_k_renyi_05_kl_div_tkn_vals','min_k_renyi_1_kl_div_tkn_vals','min_k_renyi_2_kl_div_tkn_vals','min_k_renyi_inf_kl_div_tkn_vals','min_k_renyi_divergence_025_tkn_vals','min_k_renyi_divergence_05_tkn_vals','min_k_renyi_divergence_2_tkn_vals','min_k_renyi_divergence_4_tkn_vals'] \
+    \
+    img_metrics.get_proc_meta_examples=1000 \
     img_metrics.get_token_labels=1000 \
     img_metrics.get_raw_images=5 \
-\
     img_metrics.get_raw_meta_examples=1000 \
-    img_metrics.get_raw_meta_metrics='["losses"]'\
-\
-    img_metrics.get_proc_meta_examples=1000 \
-    img_metrics.get_proc_meta_metrics='["min_k_renyi_05_kl_div_tkn_vals","min_k_renyi_1_kl_div_tkn_vals","min_k_renyi_2_kl_div_tkn_vals","min_k_renyi_inf_kl_div_tkn_vals","min_k_renyi_divergence_025_tkn_vals","min_k_renyi_divergence_05_tkn_vals","min_k_renyi_divergence_4_tkn_vals"]'\
-\
+    \
     data.augmentations.RandomResize.use=false \
     data.augmentations.RandomResize.size='[[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256]]' \
     data.augmentations.RandomResize.scale='[[0.2,0.2],[0.4,0.4],[0.6,0.6],[0.8,0.8],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0]]' \
@@ -43,22 +49,3 @@ python /home/clo37/priv/VLM-MIA-Study/mia.py \
     data.augmentations.GaussianNoise.std='[1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0]' \
     data.augmentations.RandomAffine.use=false \
     data.augmentations.ColorJitter.use=false\
-
-    
-
-
-
-
-
-
-# python /home/clo37/priv/VLM-MIA-Study/mia.py \
-#     img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_25","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"] \
-#     img_metrics.parts=["img"] \
-#     test_run.test_run=true \
-#     path.output_dir=/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA \
-#     img_metrics.get_meta_values=20 \
-#     img_metrics.get_token_labels=20 \
-#     data.augmentations.RandomResize.use=true \
-#     data.augmentations.RandomRotation.use=false \
-#     data.augmentations.RandomAffine.use=false \
-#     data.augmentations.GaussianNoise.use=true
