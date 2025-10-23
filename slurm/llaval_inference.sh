@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=gn_01
-#SBATCH --output=/local/scratch/hlee959/2025_vlm_mia/logs/mini_gn.out
-#SBATCH --error=/local/scratch/hlee959/2025_vlm_mia/logs/mini_gn.err
+#SBATCH --output=/local/scratch/hlee959/2025_vlm_mia/logs/llava_0.out
+#SBATCH --error=/local/scratch/hlee959/2025_vlm_mia/logs/llava_0.err
 
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
@@ -29,12 +29,12 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
-conda activate vlm_mia
+conda activate vlm_mia_2
 
 cd /home/hlee959/projects/2025_MIA_VLM/vlm_mia
 
 python mia.py \
-    target_model=minigpt-4 \
+    target_model="llava-v1.5-7b" \
     data.subset="img_Flickr" \
     path.cache_dir=/local/scratch/hlee959/.cache \
     path.output_dir=/local/scratch/hlee959/2025_vlm_mia/output/gn_01 \

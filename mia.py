@@ -94,7 +94,7 @@ def main(cfg):
     print("Generating Inference and Augmentations.....")
     if cfg.target_model.type == "llava":
         model, tokenizer, image_processor, conv_mode = target_model
-        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions, tokenizer, image_processor, model.config, conv_mode)
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions, model.config, tokenizer, image_processor, conv_mode)
     elif cfg.target_model.type == "minigpt":
         mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions)
     proc_meta_vaues_sampled_indices = list()
@@ -166,7 +166,7 @@ def main(cfg):
     
     if cfg.target_model.type == "llava":
         model, tokenizer, image_processor, conv_mode = target_model
-        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg)
+        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg, tokenizer=tokenizer)
     elif cfg.target_model.type == "minigpt":
         model, vis_encoder, chat_state = target_model
         gpu_id = model.device.index if hasattr(model, "device") and hasattr(model.device, "index") else 0

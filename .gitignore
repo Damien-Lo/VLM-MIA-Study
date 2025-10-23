@@ -1,6 +1,49 @@
+# Project specific
 results/
 LatestResults/
 cache/
 *.cache
 .cache/
-__pycache__/
+logs/
+*.log
+*.err
+*.out
+
+# Model checkpoints and weights
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+checkpoints/
+weights/
+models/
+
+# Data files
+*.h5
+*.hdf5
+*.pkl
+*.pickle
+*.npy
+*.npz
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Hydra outputs
+outputs/
+.hydra/
+
+# Wandb
+wandb/
+
+# SLURM job files
+slurm-*.out
+*.slurm
+
+# Generated data
+gen_descriptions/
+generated_data/
