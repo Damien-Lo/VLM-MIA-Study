@@ -1,0 +1,27 @@
+type: minigpt
+model:
+  arch: minigpt4
+  model_type: pretrain_llama2
+  freeze_vit: true
+  freeze_qformer: true
+  max_txt_len: 160
+  end_sym: "</s>"
+  low_resource: False
+  prompt_path: "minigpt/prompts/alignment.txt"
+  # prompt_template: '[INST] {} [/INST] '
+  ckpt: '/local/scratch/hlee959/2025_vlm_mia/minigpt-4/pretrained_weights/pretrained_minigpt4_llama2_7b.pth'
+
+gpu_id: 0
+
+datasets:
+  cc_sbu_align:
+    vis_processor:
+      train:
+        name: "blip2_image_eval"
+        image_size: 224
+    text_processor:
+      train:
+        name: "blip_caption"
+
+run:
+  task: image_text_pretrain

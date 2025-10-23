@@ -15,11 +15,11 @@ from src.eval import evaluate
 from src.inference import inference
 from src.data import get_mod_infer_data
 from src.data import get_generation_data
-from src.model import generate, mod_infer_batch
-from llava.mm_utils import get_model_name_from_path
-from llava.model.builder import load_pretrained_model
-from src.misc import save_to_json, save_to_pt, save_run_meta, load_conversation_template, build_descriptions_dataset
+from src.model import load_target_model
 from textwrap import dedent
+from src.misc import save_to_json, save_to_pt, save_run_meta, build_descriptions_dataset
+
+
 
 @hydra.main(version_base=None, config_path="./config", config_name="run_img")
 def main(cfg):
@@ -75,25 +75,15 @@ def main(cfg):
           )
 
     # Load the target model
-    model_name = get_model_name_from_path(cfg.target_model.model_path)
-
-    tokenizer, model, image_processor, context_len = load_pretrained_model(
-        cfg.target_model.model_path, 
-        cfg.target_model.model_base, 
-        model_name, 
-        gpu_id=cfg.target_model.gpu_id,
-        cache_dir=cfg.path.cache_dir
-    )
-    conv_mode = load_conversation_template(model_name)
-
+    target_model = load_target_model(cfg)
 
     # Generation data
     text = cfg.prompt.text
+    gen_path = os.path.join(os.getcwd(), "gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "sentences.json")
+    with open(gen_path, 'r') as f:
+        gen_data = json.load(f)
+    descriptions = gen_data["sentences"]
 
-    # gen_data = get_generation_data(cfg, tokenizer, image_processor, text, model.config, conv_mode)
-    # indices, descriptions = generate(model, tokenizer, gen_data, cfg)
-    
-    from gen_text import flickr_sentences, dalle_sentences
     
     # If we want to get meta values and labels for some samples (first x members and nonmembers) find the indecies these samples live
     print('''
@@ -108,10 +98,16 @@ def main(cfg):
     member_idxs, nonmember_idxs, descriptions = build_descriptions_dataset(cfg)
 
     print("Generating Inference and Augmentations.....")
-    mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, descriptions, tokenizer, image_processor, text, model.config, conv_mode)
+    if cfg.target_model.type == "llava":
+        model, tokenizer, image_processor, conv_mode = target_model
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, model.config, tokenizer, image_processor, conv_mode)
+    elif cfg.target_model.type == "minigpt":
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions)
     proc_meta_vaues_sampled_indices = list()
     raw_meta_vaues_sampled_indices = list()
     class_labels = mod_infer_data["label"]
+
+    print("class_labels", type(class_labels))
     
     if cfg.job_meta_params.test_run:
         class_labels = class_labels[: (cfg.inference.batch_size * cfg.inference.test_number_of_batches)]
@@ -173,8 +169,16 @@ def main(cfg):
           \n \n
           '''
           )
-    preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, tokenizer, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg)
     
+    if cfg.target_model.type == "llava":
+        model, tokenizer, image_processor, conv_mode = target_model
+        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices, cfg, tokenizer=tokenizer)
+    elif cfg.target_model.type == "minigpt":
+        model, vis_encoder, chat_state = target_model
+        gpu_id = model.device.index if hasattr(model, "device") and hasattr(model.device, "index") else 0
+        preds, sampled_raw_meta, proc_meta, global_token_labels = inference(model, mod_infer_data, raw_meta_vaues_sampled_indices, proc_meta_vaues_sampled_indices,
+            cfg, vis_processor=vis_encoder, gpu_id=gpu_id, chat_state=chat_state)
+
     print('''
           \n \n
           ==================================================
@@ -190,20 +194,19 @@ def main(cfg):
     if cfg.img_metrics.get_token_labels > 0:
         print("Saving token labels to json...")
         save_to_json(proc_meta_vaues_sampled_indices.tolist(), "all_proc_meta_sampled_examples",cfg)
-        save_to_json(class_labels, "class_labels", cfg)
+        save_to_json(list(class_labels), "class_labels", cfg)
         save_to_json(global_token_labels, "token_labels", cfg)
         
     if cfg.img_metrics.get_raw_meta_examples > 0:
         print("Saving raw meta values to pt......")
         save_to_json(raw_meta_vaues_sampled_indices.tolist(), "all_raw_meta_sampled_examples",cfg)
-        save_to_json(class_labels, "class_labels", cfg)
+        save_to_json(list(class_labels), "class_labels", cfg)
         save_to_pt(sampled_raw_meta, "raw_meta_values", cfg)
     
-
     if cfg.img_metrics.get_proc_meta_examples > 0:
         print("Saving processed meta values to json....")
         save_to_json(proc_meta_vaues_sampled_indices.tolist(), "all_proc_meta_sampled_examples",cfg)
-        save_to_json(class_labels, "class_labels", cfg)
+        save_to_json(list(class_labels), "class_labels", cfg)
         save_to_json(proc_meta, "processed_meta_values", cfg)
         
     print('''
