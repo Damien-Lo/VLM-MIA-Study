@@ -1,8 +1,6 @@
 # Project specific
 results/
 LatestResults/
-cache/
-*.cache
 .cache/
 logs/
 *.log
@@ -10,7 +8,7 @@ logs/
 *.out
 
 # Model checkpoints and weights
-*.pth
+*.pths
 *.pt
 *.ckpt
 *.bin

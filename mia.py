@@ -16,8 +16,10 @@ from src.inference import inference
 from src.data import get_mod_infer_data
 from src.data import get_generation_data
 from src.model import load_target_model
-from src.misc import save_to_json, save_to_pt
 from textwrap import dedent
+from src.misc import save_to_json, save_to_pt, save_run_meta, build_descriptions_dataset
+
+
 
 @hydra.main(version_base=None, config_path="./config", config_name="run_img")
 def main(cfg):
@@ -31,7 +33,7 @@ def main(cfg):
           '''
           )
     
-    if cfg.test_run.test_run:
+    if cfg.job_meta_params.test_run:
         print('''
           \n \n
           ==================================================
@@ -60,6 +62,8 @@ def main(cfg):
         
     if cfg.img_metrics.get_proc_meta_examples > 0:
         print(f"Requested metrics: {cfg.img_metrics.get_proc_meta_metrics} of first {cfg.img_metrics.get_proc_meta_examples} of each class")
+        
+    save_run_meta(cfg)
         
         
     print('''
@@ -91,19 +95,21 @@ def main(cfg):
           '''
           )
     
+    member_idxs, nonmember_idxs, descriptions = build_descriptions_dataset(cfg)
+
     print("Generating Inference and Augmentations.....")
     if cfg.target_model.type == "llava":
         model, tokenizer, image_processor, conv_mode = target_model
-        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions, model.config, tokenizer, image_processor, conv_mode)
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, model.config, tokenizer, image_processor, conv_mode)
     elif cfg.target_model.type == "minigpt":
-        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, descriptions)
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions)
     proc_meta_vaues_sampled_indices = list()
     raw_meta_vaues_sampled_indices = list()
     class_labels = mod_infer_data["label"]
 
     print("class_labels", type(class_labels))
     
-    if cfg.test_run.test_run:
+    if cfg.job_meta_params.test_run:
         class_labels = class_labels[: (cfg.inference.batch_size * cfg.inference.test_number_of_batches)]
     
 

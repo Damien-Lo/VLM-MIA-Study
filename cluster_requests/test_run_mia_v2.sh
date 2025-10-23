@@ -11,42 +11,38 @@
 source ~/.bashrc
 conda activate vlm_large_mia_llava_venv
 
-
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
+
 python /home/clo37/priv/VLM-MIA-Study/mia.py \
-    test_run.test_run=true \
-    img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_divergence_025"] \
-    img_metrics.parts=["img"] \
+    job_meta_params.test_run=false \
+    job_meta_params.description="Test Run 2 to see if changing enviromnments to original stop the divide by 0 issue" \
+    \
     path.output_dir=/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA2 \
-    img_metrics.get_meta_values=0 \
-    img_metrics.get_token_labels=0 \
-    img_metrics.get_raw_images=3 \
+    \
+    target_model="llava-v1.5-7b" \
+    \
+    data.subset='img_Flickr' \
+    data.member_subset='img_dalle' \
+    data.nonmember_subset='img_Flickr' \
+    \
+    img_metrics.parts=["img"] \
+    img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"] \
+    img_metrics.get_raw_meta_metrics=['losses'] \
+    img_metrics.get_proc_meta_metrics=['min_k_renyi_05_kl_div_tkn_vals','min_k_renyi_1_kl_div_tkn_vals','min_k_renyi_2_kl_div_tkn_vals','min_k_renyi_inf_kl_div_tkn_vals','min_k_renyi_divergence_025_tkn_vals','min_k_renyi_divergence_05_tkn_vals','min_k_renyi_divergence_2_tkn_vals','min_k_renyi_divergence_4_tkn_vals'] \
+    \
+    img_metrics.get_proc_meta_examples=1000 \
+    img_metrics.get_token_labels=1000 \
+    img_metrics.get_raw_images=5 \
+    img_metrics.get_raw_meta_examples=1000 \
+    \
     data.augmentations.RandomResize.use=false \
     data.augmentations.RandomResize.size='[[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256],[256,256]]' \
     data.augmentations.RandomResize.scale='[[0.2,0.2],[0.4,0.4],[0.6,0.6],[0.8,0.8],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0]]' \
     data.augmentations.RandomResize.ratio='[[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[1.0,1.0],[0.5,0.5],[0.75,0.75],[1.0,1.0],[1.25,1.25],[1.5,1.5]]' \
-    data.augmentations.RandomRotation.use=true \
-    data.augmentations.RandomRotation.degrees='[30,45,60,90]' \
+    data.augmentations.RandomRotation.use=false \
+    data.augmentations.RandomRotation.degrees='[0.1,0.2,0.3,0.4,0.5,5,30,45,60,90]' \
     data.augmentations.GaussianNoise.use=true \
-    data.augmentations.GaussianNoise.mean='[0.0,0.0,0.0,0.0,0.0]' \
-    data.augmentations.GaussianNoise.std='[1.0,2.0,3.0,4.0,5.0]' \
+    data.augmentations.GaussianNoise.mean='[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]' \
+    data.augmentations.GaussianNoise.std='[1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0]' \
     data.augmentations.RandomAffine.use=false \
     data.augmentations.ColorJitter.use=false\
-    
-
-
-
-
-# python /home/clo37/priv/VLM-MIA-Study/mia.py \
-#     img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_divergence_025"] \
-#     img_metrics.parts=["img"] \
-#     test_run.test_run=true \
-#     path.output_dir=/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA \
-#     img_metrics.get_meta_values=20 \
-#     img_metrics.get_token_labels=20 \
-#     data.augmentations.RandomResize.use=true \
-#     data.augmentations.RandomRotation.use=false \
-#     data.augmentations.RandomAffine.use=false \
-#     data.augmentations.GaussianNoise.use=true
-
-
