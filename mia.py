@@ -18,7 +18,7 @@ from src.data import get_generation_data
 from src.model import generate, mod_infer_batch
 from llava.mm_utils import get_model_name_from_path
 from llava.model.builder import load_pretrained_model
-from src.misc import save_to_json, save_to_pt, load_conversation_template
+from src.misc import save_to_json, save_to_pt, save_run_meta, load_conversation_template, build_descriptions_dataset
 from textwrap import dedent
 
 @hydra.main(version_base=None, config_path="./config", config_name="run_img")
@@ -33,7 +33,7 @@ def main(cfg):
           '''
           )
     
-    if cfg.test_run.test_run:
+    if cfg.job_meta_params.test_run:
         print('''
           \n \n
           ==================================================
@@ -62,6 +62,8 @@ def main(cfg):
         
     if cfg.img_metrics.get_proc_meta_examples > 0:
         print(f"Requested metrics: {cfg.img_metrics.get_proc_meta_metrics} of first {cfg.img_metrics.get_proc_meta_examples} of each class")
+        
+    save_run_meta(cfg)
         
         
     print('''
@@ -102,21 +104,16 @@ def main(cfg):
           \n \n
           '''
           )
-
-    if cfg.data.subset == "img_Flickr":
-        descriptions = flickr_sentences
-    elif cfg.data.subset == "img_dalle":
-        descriptions = dalle_sentences
-    else:
-        raise ValueError(f"Unexpected subset {cfg.data.subset}")
+    
+    member_idxs, nonmember_idxs, descriptions = build_descriptions_dataset(cfg)
 
     print("Generating Inference and Augmentations.....")
-    mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, model.config, conv_mode)
+    mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, descriptions, tokenizer, image_processor, text, model.config, conv_mode)
     proc_meta_vaues_sampled_indices = list()
     raw_meta_vaues_sampled_indices = list()
     class_labels = mod_infer_data["label"]
     
-    if cfg.test_run.test_run:
+    if cfg.job_meta_params.test_run:
         class_labels = class_labels[: (cfg.inference.batch_size * cfg.inference.test_number_of_batches)]
     
 

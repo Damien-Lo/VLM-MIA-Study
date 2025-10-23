@@ -56,7 +56,7 @@ def inference(model, tokenizer, dataset, raw_meta_sampled_indices, proc_meta_sam
         print(f"\n\nRunning Batch: {b_idx}")
             
         # For Test Run, just run 1 batch
-        if cfg.test_run.test_run and b_idx >= cfg.inference.test_number_of_batches:
+        if cfg.job_meta_params.test_run and b_idx >= cfg.inference.test_number_of_batches:
             break
             
         

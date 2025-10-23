@@ -49,7 +49,7 @@ def evaluate(preds, labels, part, cfg):
     
     used_labels = labels
     
-    if cfg.test_run.test_run:
+    if cfg.job_meta_params.test_run:
         used_labels = labels[:(cfg.inference.batch_size* cfg.inference.test_number_of_batches)]
         
 

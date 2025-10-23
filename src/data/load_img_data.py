@@ -4,10 +4,12 @@ import requests
 from PIL import Image
 from io import BytesIO
 from datasets import Dataset
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from src.data.augmentations import get_augmentations
 from torchvision import transforms
 import numpy as np
+import sys
+from datasets.features import Image as HFImage
 
 from llava.mm_utils import (
     process_images,
@@ -60,11 +62,18 @@ def get_generation_data(cfg, tokenizer, image_processor, text, model_config, con
     model_config: model.config
     conv: conv_mode
     """
-    _dataset = load_dataset(path=cfg.data.dataset,
-                          name=cfg.data.subset,
-                          split=cfg.data.split,
-                          cache_dir=cfg.path.cache_dir)
+    
+    if cfg.data.dataset == 'JaineLi/VL-MIA-image' and cfg.data.subset in ['img_Flickr', 'img_dalle']:
+        _dataset = load_dataset(path=cfg.data.dataset,
+                            name=cfg.data.subset,
+                            split=cfg.data.split,
+                            cache_dir=cfg.path.cache_dir)
+    else:
+        _dataset = Dataset.from_file(cfg.data.subset)
+    
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
+    print("DATASET LOADED")
+    
     if cfg.generation.use_augmentation:
         _dataset = _dataset.map(convert_to_aug_generation_input_ids,
                             batched=True,
@@ -92,7 +101,7 @@ def get_generation_data(cfg, tokenizer, image_processor, text, model_config, con
                             })
     return _dataset
 
-def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, model_config, conv_mode):
+def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, descriptions, tokenizer, image_processor, text, model_config, conv_mode):
     """
     cfg :  dataset config
     descriptions: generated responses
@@ -101,15 +110,39 @@ def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, mode
     model_config: model.config
     conv: conv from cfg.target_model
     """
-    _dataset = load_dataset(path=cfg.data.dataset,
-                          name=cfg.data.subset,
-                          split=cfg.data.split,
-                          cache_dir=cfg.path.cache_dir)
+    
+    if cfg.data.member_dataset != "":
+        if cfg.data.member_dataset == 'JaineLi/VL-MIA-image' and cfg.data.member_subset in ['img_Flickr', 'img_dalle']:
+            _member_dataset = load_dataset(path=cfg.data.member_dataset,
+                                name=cfg.data.member_subset,
+                                split=cfg.data.split,
+                                cache_dir=cfg.path.cache_dir).select(member_idxs)
+        else:
+            _member_dataset = Dataset.from_file(cfg.data.member_subset).cast_column("image", HFImage(decode=True))
+            
+    if cfg.data.nonmember_dataset != "":
+        if cfg.data.nonmember_dataset == 'JaineLi/VL-MIA-image' and cfg.data.nonmember_subset in ['img_Flickr', 'img_dalle']:
+            _nonmember_dataset = load_dataset(path=cfg.data.nonmember_dataset,
+                                name=cfg.data.nonmember_subset,
+                                split=cfg.data.split,
+                                cache_dir=cfg.path.cache_dir).select(nonmember_idxs)
+        else:
+            _nonmember_dataset = Dataset.from_file(cfg.data.nonmember_subset).cast_column("image", HFImage(decode=True))
+            
+    if cfg.data.nonmember_dataset != "" and cfg.data.member_dataset != "": 
+        _dataset = concatenate_datasets([_member_dataset,_nonmember_dataset])
+        print(f"Member data split: {cfg.data.member_subset} with length: {len(_member_dataset)}")
+        print(f"Nonember data split: {cfg.data.nonmember_subset} with length: {len(_nonmember_dataset)}")
+        print(f"Total Built Dataset length: {len(_dataset)} vs expected length of : {len(_member_dataset) + len(_nonmember_dataset)} and description length of {len(descriptions)}")
+    else:
+        _dataset = load_dataset(path=cfg.data.dataset,
+                                name=cfg.data.subset,
+                                split=cfg.data.split,
+                                cache_dir=cfg.path.cache_dir)
+    
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
     _dataset = _dataset.add_column("desc", descriptions)
-    
-    # Sanity check
-    print(f"Data split {cfg.data.subset} length: {len(_dataset)}")
+    print("DATASET LOADED")
     
     # Getting The Indecies of Only the Images Selected
     class_labels = _dataset["label"]
@@ -128,9 +161,6 @@ def get_mod_infer_data(cfg, descriptions, tokenizer, image_processor, text, mode
 
     else:
         categorised_image_sampled_indicies = None  # Initialize to avoid UnboundLocalError
-    
-    
-    
     
     
     if cfg.inference.use_augmentation:
