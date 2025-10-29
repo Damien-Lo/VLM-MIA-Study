@@ -135,8 +135,8 @@ def cross_entropy_diff_mink(per_token_ce, cfg):
 
     return result
 
-def renyi_kl_div_mink(renyi_probs, cfg, eps=1e-12):
-    print("KL-Div Metric")
+def renyi_kl_div_maxk(renyi_probs, cfg, eps=1e-12):
+    # print("KL-Div Metric")
     result = dict()
     meta = dict()
     
@@ -165,13 +165,6 @@ def renyi_kl_div_mink(renyi_probs, cfg, eps=1e-12):
                 aug_log = np.log(torch.stack(aug_probs).cpu().numpy() + eps)
 
                 kl = kl_div_per_token(org, org_log, aug_log) # KL: 1D vector
-
-
-                print(f"""
-                        ==================
-                        Sample: {sample_idx}
-                        ==================
-                        """)
                 
                 # Append Values to Respective Data Storage
                 all_raw_metric_values[sample_idx].append(kl.tolist())
@@ -275,8 +268,8 @@ def kl_div_per_token(org_probs, org_log_probs, aug_log_probs):
 
 
 
-def renyi_divergence_mink(probs, cfg):
-    print("Renyi-Div Metric")
+def renyi_divergence_maxk(probs, cfg):
+    # print("Renyi-Div Metric")
     alpha = cfg.alpha
     result = dict()
     meta = dict()

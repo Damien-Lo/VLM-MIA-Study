@@ -3,6 +3,7 @@ import warnings
 import shutil
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig, BitsAndBytesConfig
+from llava.model.language_model.llava_llama import LlavaConfig
 import torch
 from llava.model import *
 from llava.constants import DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
@@ -31,7 +32,7 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         if 'lora' in model_name.lower() and model_base is None:
             warnings.warn('There is `lora` in model name but no `model_base` is provided. If you are loading a LoRA model, please provide the `model_base` argument.')
         if 'lora' in model_name.lower() and model_base is not None:
-            from llava.model.language_model.llava_llama import LlavaConfig
+            # from llava.model.language_model.llava_llama import LlavaConfig
             lora_cfg_pretrained = LlavaConfig.from_pretrained(model_path)
             tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
             print('Loading LLaVA from base model...')
@@ -62,13 +63,18 @@ def load_pretrained_model(model_path, model_base, model_name, load_8bit=False, l
         elif model_base is not None:
             print('Loading LLaVA from base model...')
             tokenizer = AutoTokenizer.from_pretrained(model_base, use_fast=False)
+            # Merge pretrained (model_path) cfg with base cfg
+            cfg_base = AutoConfig.from_pretrained(model_base)
             cfg_pretrained = AutoConfig.from_pretrained(model_path)
-            model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_pretrained, **kwargs)
-            model = model.to(device)
+            merged = {**cfg_base.to_dict(), **cfg_pretrained.to_dict()}
+            cfg_base_pretrain_merge = LlavaConfig(**merged)
+            model = LlavaLlamaForCausalLM.from_pretrained(model_base, low_cpu_mem_usage=True, config=cfg_base_pretrain_merge, **kwargs)
 
             mm_projector_weights = torch.load(os.path.join(model_path, 'mm_projector.bin'), map_location='cpu')
             mm_projector_weights = {k: v.to(torch.float16) for k, v in mm_projector_weights.items()}
-            model.load_state_dict(mm_projector_weights, strict=False)
+            model.load_state_dict(mm_projector_weights, strict=False, assign=True)
+            
+            model = model.to(device)
         else:
             tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
             model = LlavaLlamaForCausalLM.from_pretrained(model_path, low_cpu_mem_usage=True, **kwargs)

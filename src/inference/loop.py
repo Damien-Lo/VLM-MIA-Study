@@ -62,9 +62,7 @@ def inference(model, dataset, raw_meta_sampled_indices, proc_meta_sampled_indice
     for b_idx, batch in enumerate(tqdm(batch_processor,
                                        total=len(batch_processor),
                                        desc="Running inference",
-                                       unit="batch")):    
-        
-        print(f"\n\nRunning Batch: {b_idx}")
+                                       unit="batch")):
             
         # For Test Run, just run 1 batch
         if cfg.job_meta_params.test_run and b_idx >= cfg.inference.test_number_of_batches:

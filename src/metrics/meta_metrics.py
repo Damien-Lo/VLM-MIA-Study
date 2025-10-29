@@ -84,6 +84,7 @@ def get_meta_metrics_by_part(total_parts, part, cfg):
     meta_metrics["modified_entropies"] = dict()
     meta_metrics["modified_entropies_alpha_05"] = dict()
     meta_metrics["modified_entropies_alpha_2"] = dict()
+    meta_metrics["no_norm_probs"] = dict()
     meta_metrics["renyi_05_probs"] = dict()
     meta_metrics["renyi_1_probs"] = dict()
     meta_metrics["renyi_2_probs"] = dict()
@@ -109,6 +110,7 @@ def get_meta_metrics_by_part(total_parts, part, cfg):
         meta_metrics["modified_entropies"][aug_type] = [[] for _ in range(len(aug_results))]
         meta_metrics["modified_entropies_alpha_05"][aug_type] = [[] for _ in range(len(aug_results))]
         meta_metrics["modified_entropies_alpha_2"][aug_type] = [[] for _ in range(len(aug_results))]
+        meta_metrics["no_norm_probs"][aug_type] = [[] for _ in range(len(aug_results))]
         meta_metrics["renyi_05_probs"][aug_type] = [[] for _ in range(len(aug_results))]
         meta_metrics["renyi_1_probs"][aug_type] = [[] for _ in range(len(aug_results))]
         meta_metrics["renyi_2_probs"][aug_type] = [[] for _ in range(len(aug_results))]
@@ -135,6 +137,7 @@ def get_meta_metrics_by_part(total_parts, part, cfg):
             meta_metrics["modified_entropies"][aug_type][aug_idx] = [[] for _ in range(len(aug_result[part]["input_ids"]))]
             meta_metrics["modified_entropies_alpha_05"][aug_type][aug_idx] = [[] for _ in range(len(aug_result[part]["input_ids"]))]
             meta_metrics["modified_entropies_alpha_2"][aug_type][aug_idx] = [[] for _ in range(len(aug_result[part]["input_ids"]))]
+            meta_metrics["no_norm_probs"][aug_type][aug_idx] = [[] for _ in range(len(aug_result[part]["input_ids"]))]         # 2d array (token_seq, vocab_size)
             meta_metrics["renyi_05_probs"][aug_type][aug_idx] = [[] for _ in range(len(aug_result[part]["input_ids"]))]         # 2d array (token_seq, vocab_size)
             meta_metrics["renyi_1_probs"][aug_type][aug_idx] = [[] for _ in range(len(aug_result[part]["input_ids"]))]
             meta_metrics["renyi_2_probs"][aug_type][aug_idx] = [[] for _ in range(len(aug_result[part]["input_ids"]))]
@@ -156,6 +159,9 @@ def get_meta_metrics_by_part(total_parts, part, cfg):
                     entropy = -(token_probs * token_log_probs).sum().item()
                     meta_metrics["entropies"][aug_type][aug_idx][_batch_idx].append(entropy)
                     meta_metrics["renyi_1_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, 1))
+                    
+                    # No_norm
+                    meta_metrics["no_norm_probs"][aug_type][aug_idx][_batch_idx].append(token_probs_clamped)
 
                     # Renyi_05
                     alpha=0.5

@@ -1,0 +1,6 @@
+type: llava
+model_path: /local/scratch/clo37/models/llava-v1.5-mlp2x-336px-pretrain-vicuna-7b-v1.5
+model_base: lmsys/vicuna-7b-v1.5
+model_name: llava_v1.5
+conv_mode: llava_v1
+gpu_id: 0

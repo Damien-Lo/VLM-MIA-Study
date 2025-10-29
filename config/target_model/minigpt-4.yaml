@@ -7,7 +7,7 @@ model:
   max_txt_len: 160
   end_sym: "</s>"
   low_resource: False
-  prompt_path: "minigpt/prompts/alignment.txt"
+  prompt_path: "/home/clo37/priv/VLM-MIA-Study/minigpt/prompts/alignment.txt"
   # prompt_template: '[INST] {} [/INST] '
   ckpt: '/local/scratch/hlee959/2025_vlm_mia/minigpt-4/pretrained_weights/pretrained_minigpt4_llama2_7b.pth'
 

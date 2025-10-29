@@ -4,7 +4,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 from datasets import Dataset
-from datasets import load_dataset, concatenate_datasets
+from datasets import load_dataset, concatenate_datasets, load_from_disk
 from src.data.augmentations import get_augmentations
 from torchvision import transforms
 import numpy as np
@@ -113,7 +113,7 @@ def get_generation_data(cfg, model_type, text, tokenizer=None, image_processor=N
     return _dataset
 
 
-def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, model_config=None tokenizer=None, image_processor=None, conv_mode=None):
+def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, model_config=None, tokenizer=None, image_processor=None, conv_mode=None):
     """
     cfg :  dataset config
     descriptions: generated responses
@@ -123,6 +123,7 @@ def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, mod
     conv: conv from cfg.target_model
     """
     
+    #Loading and building appropiate datasets
     if cfg.data.member_dataset != "":
         if cfg.data.member_dataset == 'JaineLi/VL-MIA-image' and cfg.data.member_subset in ['img_Flickr', 'img_dalle']:
             _member_dataset = load_dataset(path=cfg.data.member_dataset,
@@ -155,6 +156,10 @@ def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, mod
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
     _dataset = _dataset.add_column("desc", descriptions)
     print("DATASET LOADED")
+    
+    
+    
+    
     
     # Getting The Indecies of Only the Images Selected
     class_labels = _dataset["label"]
@@ -499,7 +504,6 @@ def convert_to_augmentation_mod_infer(examples, tokenizer, image_processor, inst
         if _indices in image_sampled_indicies:
             all_orig_raw_images.append(np.array(images[0]))
             all_aug_raw_images.append(aug_raw_imgs)
-            print("Appended Desired Sample")
         else:
             all_orig_raw_images.append(None)
             all_aug_raw_images.append(None)
@@ -549,11 +553,12 @@ def convert_to_mod_infer_minigpt(examples, instruction):
         "desc": examples["desc"]
     }
 
-def convert_to_augmentation_mod_infer_minigpt(examples, instruction, cfg):
+def convert_to_augmentation_mod_infer_minigpt(examples, instruction, cfg, image_sampled_indicies):
     image_paths = examples["image"]
     all_orig_images = list()
     all_aug_images = list()
     all_texts = list()
+    
 
     aug_dict = get_augmentations(cfg)
 

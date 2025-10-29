@@ -1,4 +1,5 @@
 dataset: "JaineLi/VL-MIA-image"
+subset: "img_Flickr"
 member_dataset: ""
 member_subset: ""
 member_desc_path: ""

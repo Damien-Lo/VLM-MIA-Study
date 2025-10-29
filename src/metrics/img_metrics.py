@@ -1,7 +1,7 @@
 import torch
 import numpy as np
 from src.metrics.baseline_metrics import aug_kl, min_k, mod_entropy, mod_renyi, max_prob_gap, max_entropy, min_entropy
-from src.metrics.proposed_metrics import cross_entropy_mink, cross_entropy_diff_mink, renyi_kl_div_mink, renyi_divergence_mink
+from src.metrics.proposed_metrics import cross_entropy_mink, cross_entropy_diff_mink, renyi_kl_div_maxk, renyi_divergence_maxk
 
 def get_img_metric_by_parts(meta_metrics, cfg):
     """
@@ -93,33 +93,36 @@ def get_img_metric_by_parts(meta_metrics, cfg):
         _cross_entropy_diff_min_k = cross_entropy_diff_mink(meta_metrics["per_token_CE_loss"], cfg.img_metrics.cross_entropy_mink)
         pred["cross_entropy_diff_min_k"] = _cross_entropy_diff_min_k
         
-    if "min_k_renyi_05_kl_div" in cfg.img_metrics.metrics_to_use:
-        pred["min_k_renyi_05_kl_div"], meta["min_k_renyi_05_kl_div_tkn_vals"] = renyi_kl_div_mink(meta_metrics['renyi_05_probs'], cfg.img_metrics.min_k_renyi_05_kl_div)
+    if "max_k_no_norn_kl_div" in cfg.img_metrics.metrics_to_use:
+        pred["max_k_no_norn_kl_div"], meta["max_k_no_norn_kl_div_tkn_vals"] = renyi_kl_div_maxk(meta_metrics['no_norm_probs'], cfg.img_metrics.max_k_no_norn_kl_div)
         
-    if "min_k_renyi_1_kl_div" in cfg.img_metrics.metrics_to_use:
-        pred["min_k_renyi_1_kl_div"],  meta["min_k_renyi_1_kl_div_tkn_vals"] = renyi_kl_div_mink(meta_metrics['renyi_1_probs'], cfg.img_metrics.min_k_renyi_1_kl_div)
+    if "max_k_renyi_05_kl_div" in cfg.img_metrics.metrics_to_use:
+        pred["max_k_renyi_05_kl_div"], meta["max_k_renyi_05_kl_div_tkn_vals"] = renyi_kl_div_maxk(meta_metrics['renyi_05_probs'], cfg.img_metrics.max_k_renyi_05_kl_div)
         
-    if "min_k_renyi_2_kl_div" in cfg.img_metrics.metrics_to_use:
-        pred["min_k_renyi_2_kl_div"],  meta["min_k_renyi_2_kl_div_tkn_vals"] = renyi_kl_div_mink(meta_metrics['renyi_2_probs'], cfg.img_metrics.min_k_renyi_2_kl_div)
+    if "max_k_renyi_1_kl_div" in cfg.img_metrics.metrics_to_use:
+        pred["max_k_renyi_1_kl_div"],  meta["max_k_renyi_1_kl_div_tkn_vals"] = renyi_kl_div_maxk(meta_metrics['renyi_1_probs'], cfg.img_metrics.max_k_renyi_1_kl_div)
         
-    if "min_k_renyi_inf_kl_div" in cfg.img_metrics.metrics_to_use:
-        pred["min_k_renyi_inf_kl_div"],  meta["min_k_renyi_inf_kl_div_tkn_vals"] = renyi_kl_div_mink(meta_metrics['renyi_inf_probs'], cfg.img_metrics.min_k_renyi_inf_kl_div)
+    if "max_k_renyi_2_kl_div" in cfg.img_metrics.metrics_to_use:
+        pred["max_k_renyi_2_kl_div"],  meta["max_k_renyi_2_kl_div_tkn_vals"] = renyi_kl_div_maxk(meta_metrics['renyi_2_probs'], cfg.img_metrics.max_k_renyi_2_kl_div)
         
-    if "min_k_renyi_divergence_025" in cfg.img_metrics.metrics_to_use:
-        _min_k_renyi_divergence_025 = renyi_divergence_mink(meta_metrics['probabilities'], cfg.img_metrics.min_k_renyi_divergence_025)
-        pred["min_k_renyi_divergence_025"], meta["min_k_renyi_divergence_025_tkn_vals"] = _min_k_renyi_divergence_025
+    if "max_k_renyi_inf_kl_div" in cfg.img_metrics.metrics_to_use:
+        pred["max_k_renyi_inf_kl_div"],  meta["max_k_renyi_inf_kl_div_tkn_vals"] = renyi_kl_div_maxk(meta_metrics['renyi_inf_probs'], cfg.img_metrics.max_k_renyi_inf_kl_div)
         
-    if "min_k_renyi_divergence_05" in cfg.img_metrics.metrics_to_use:
-        _min_k_renyi_divergence_05 = renyi_divergence_mink(meta_metrics['probabilities'], cfg.img_metrics.min_k_renyi_divergence_05)
-        pred["min_k_renyi_divergence_05"], meta["min_k_renyi_divergence_05_tkn_vals"] = _min_k_renyi_divergence_05
+    if "max_k_renyi_divergence_025" in cfg.img_metrics.metrics_to_use:
+        _max_k_renyi_divergence_025 = renyi_divergence_maxk(meta_metrics['probabilities'], cfg.img_metrics.max_k_renyi_divergence_025)
+        pred["max_k_renyi_divergence_025"], meta["max_k_renyi_divergence_025_tkn_vals"] = _max_k_renyi_divergence_025
+        
+    if "max_k_renyi_divergence_05" in cfg.img_metrics.metrics_to_use:
+        _max_k_renyi_divergence_05 = renyi_divergence_maxk(meta_metrics['probabilities'], cfg.img_metrics.max_k_renyi_divergence_05)
+        pred["max_k_renyi_divergence_05"], meta["max_k_renyi_divergence_05_tkn_vals"] = _max_k_renyi_divergence_05
          
-    if "min_k_renyi_divergence_2" in cfg.img_metrics.metrics_to_use:
-        _min_k_renyi_divergence_2 = renyi_divergence_mink(meta_metrics['probabilities'], cfg.img_metrics.min_k_renyi_divergence_2)
-        pred["min_k_renyi_divergence_2"], meta["min_k_renyi_divergence_2_tkn_vals"] = _min_k_renyi_divergence_2
+    if "max_k_renyi_divergence_2" in cfg.img_metrics.metrics_to_use:
+        _max_k_renyi_divergence_2 = renyi_divergence_maxk(meta_metrics['probabilities'], cfg.img_metrics.max_k_renyi_divergence_2)
+        pred["max_k_renyi_divergence_2"], meta["max_k_renyi_divergence_2_tkn_vals"] = _max_k_renyi_divergence_2
     
-    if "min_k_renyi_divergence_4" in cfg.img_metrics.metrics_to_use:
-        _min_k_renyi_divergence_4 = renyi_divergence_mink(meta_metrics['probabilities'], cfg.img_metrics.min_k_renyi_divergence_4)
-        pred["min_k_renyi_divergence_4"], meta["min_k_renyi_divergence_4_tkn_vals"] = _min_k_renyi_divergence_4
+    if "max_k_renyi_divergence_4" in cfg.img_metrics.metrics_to_use:
+        _max_k_renyi_divergence_4 = renyi_divergence_maxk(meta_metrics['probabilities'], cfg.img_metrics.max_k_renyi_divergence_4)
+        pred["max_k_renyi_divergence_4"], meta["max_k_renyi_divergence_4_tkn_vals"] = _max_k_renyi_divergence_4
         
     
     return pred, meta

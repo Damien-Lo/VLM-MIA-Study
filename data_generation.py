@@ -3,12 +3,14 @@ import sys
 import json
 import hydra
 import torch
-from src.data import get_generation_data
+# from src.data import get_generation_data
+from src.data.load_img_data import get_generation_data
 from src.model import generate
 from src.model import load_target_model
 from llava.mm_utils import get_model_name_from_path
 from llava.model.builder import load_pretrained_model
 from src.misc import load_conversation_template
+
 
 sys.path.append("./minigpt")
 
@@ -36,6 +38,7 @@ def main(cfg):
 
     # # Load the target model
     target_model = load_target_model(cfg)
+    print("Model Loaded")
 
     # Do the data generation
     text = cfg.prompt.text
@@ -57,8 +60,9 @@ def main(cfg):
         raise ValueError(f"Unexpected model type {cfg.target_model.type}")
 
     # Save the generated text
-    save_path = os.path.join(cfg.path.output_dir, "generation", str(cfg.target_model.type), str(cfg.data.subset))
-    os.makedirs(save_path, exist_ok=True)
+    # save_path = os.path.join(cfg.path.output_dir, "generation", str(cfg.target_model.type), str(cfg.data.subset))
+    # save_path = cfg.path.output_dir
+    # os.makedirs(save_path, exist_ok=True)
 
     sentences = {
         "idxs": idxs,
@@ -66,7 +70,7 @@ def main(cfg):
     }
 
     import json
-    with open(os.path.join(save_path, "sentences.json"), 'w') as f:
+    with open(cfg.path.output_dir, 'w') as f:
         json.dump(sentences, f, indent=2)
 
 if __name__ == "__main__":

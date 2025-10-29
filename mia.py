@@ -79,10 +79,10 @@ def main(cfg):
 
     # Generation data
     text = cfg.prompt.text
-    gen_path = os.path.join(os.getcwd(), "gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "sentences.json")
-    with open(gen_path, 'r') as f:
-        gen_data = json.load(f)
-    descriptions = gen_data["sentences"]
+    # gen_path = os.path.join(os.getcwd(), "gen_descriptions", str(cfg.target_model.type), str(cfg.data.subset), "sentences.json")
+    # with open(gen_path, 'r') as f:
+    #     gen_data = json.load(f)
+    # descriptions = gen_data["sentences"]
 
     
     # If we want to get meta values and labels for some samples (first x members and nonmembers) find the indecies these samples live
@@ -127,8 +127,8 @@ def main(cfg):
         ]))
     print("Completed. Tokens Acquired")
     
-    print(f"Raw Meta values sampled Indecies: {raw_meta_vaues_sampled_indices}")
-    print(f"Processed Meta values sampled Indecies: {proc_meta_vaues_sampled_indices}")
+    # print(f"Raw Meta values sampled Indecies: {raw_meta_vaues_sampled_indices}")
+    # print(f"Processed Meta values sampled Indecies: {proc_meta_vaues_sampled_indices}")
     
     
 
