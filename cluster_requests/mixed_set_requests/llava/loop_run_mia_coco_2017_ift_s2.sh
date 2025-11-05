@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=loop_run_mia_coco_2017_ift
-#SBATCH --output=out_loop_run_mia_coco_2017_ift.log
+#SBATCH --job-name=loop_run_mia_coco_2017_ift_s2
+#SBATCH --output=out_loop_run_mia_coco_2017_ift_s2.log
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
@@ -17,7 +17,7 @@ STD_SETS=(
   "[97,260,690,1900,5000]"
 )
 
-RATIOS=(0.1 0.3 0.5 0.7 0.9)
+RATIOS=(0.5 0.7 0.9)
 
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
 
@@ -35,7 +35,7 @@ for ratio in "${RATIOS[@]}"; do
             \
             data.member_dataset='coco_2017_mixed' \
             data.member_subset=/local/scratch/clo37/datasets/mixed_sets/coco_2017_ift/coco_2017_IFT_member_ratio_${ratio}/mixed_subset_memrat_${ratio}_target.arrow \
-            data.member_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/mixed_sets/coco_2017_mixed/coco_2017_IFT_member_ratio_${ratio}.json \
+            data.member_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/mixed_sets/coco_2017_mixed/coco_2017_member_ratio_${ratio}.json \
             data.nonmember_dataset='sharegpt_4o' \
             data.nonmember_subset=/local/scratch/clo37/datasets/ShareGPT-4o/global_nonmember_subset_300.arrow \
             data.nonmember_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/sharegpt_4o/global_nonmember_subset_300.json \

@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --job-name=run_mia_v2
-#SBATCH --output=out_run_mia_v2.log
+#SBATCH --job-name=v2_evaluation
+#SBATCH --output=out_v2_evaluation.log
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=300G
+#SBATCH --mem=140G
 
 
 # Load environment
@@ -23,18 +23,15 @@ export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
 for ((set=0; set<3; set++)); do
     python /home/clo37/priv/VLM-MIA-Study/mia.py \
         job_meta_params.test_run=false \
-        job_meta_params.description="'LLava Fully Fine tune model evaluation of original flickr members and share_gpt nonmembers with member ratio 0.5 to find std'" \
+        job_meta_params.description="'Evaluation on Model: IFT Llava, dataset: self_made_mixed Flickr 0.5'" \
         \
-        path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/results/2025_10_30_check/original_flickr/gn_set${set} \
+        path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/mixed_set_results/llava/eval/flickr/flickr_member_ratio_0.5_eval/gn_set${set} \
         \
         target_model="llava-v1.5-7b" \
         \
-        data.member_dataset=JaineLi/VL-MIA-image \
-        data.member_subset=img_Flickr \
-        data.member_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/img_Flickr/flickr_sentences.json \
-        data.nonmember_dataset='sharegpt_4o' \
-        data.nonmember_subset=/local/scratch/clo37/datasets/ShareGPT-4o/global_nonmember_subset_300.arrow \
-        data.nonmember_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/sharegpt_4o/global_nonmember_subset_300.json \
+        data.dataset='JaineLi/VL-MIA-image' \
+        data.subset='img_Flickr' \
+        data.single_desc_path='/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/mixed_sets/flickr_mixed/flickr_pretrain_member_ratio_0.5.json' \
         \
         img_metrics.parts=["img"] \
         img_metrics.metrics_to_use=["max_k_no_norn_kl_div","max_k_renyi_05_kl_div","max_k_renyi_1_kl_div","max_k_renyi_2_kl_div","max_k_renyi_inf_kl_div","max_k_renyi_divergence_025","max_k_renyi_divergence_05","max_k_renyi_divergence_2","max_k_renyi_divergence_4"] \

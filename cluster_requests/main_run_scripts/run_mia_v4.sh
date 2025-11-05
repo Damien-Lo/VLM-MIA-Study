@@ -9,7 +9,7 @@
 
 # Load environment
 source ~/.bashrc
-conda activate vlm_large_mia_llava_venv
+conda activate vlm_mia_latest_venv
 
 
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/

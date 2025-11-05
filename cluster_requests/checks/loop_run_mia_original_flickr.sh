@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --job-name=run_mia_v2
-#SBATCH --output=out_run_mia_v2.log
+#SBATCH --job-name=loop_run_mia_flickr_check
+#SBATCH --output=out_loop_run_mia_flickr_check.log
 #SBATCH --gres=gpu:1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
@@ -17,21 +17,25 @@ STD_SETS=(
   "[97,260,690,1900,5000]"
 )
 
+RATIOS=(0.1 0.3)
 
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
 
+
+printf ">>>====================================\n\n\n\n\nTESTING RATIO : $ratio\n\n\n\n\n===================================="
 for ((set=0; set<3; set++)); do
+    printf "\n>>>===================\n\nUsing STD set $set: ${STD_SETS[$set]}\n\n==================="
     python /home/clo37/priv/VLM-MIA-Study/mia.py \
         job_meta_params.test_run=false \
-        job_meta_params.description="'LLava Fully Fine tune model evaluation of original flickr members and share_gpt nonmembers with member ratio 0.5 to find std'" \
+        job_meta_params.description="'LLaVA Model with MEMBERS=original_flickr, NONMEMBERS=sharegpt_4o_global_nonmembers_300 at std set ${set}: ${STD_SETS[$set]} for sanity check'" \
         \
-        path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/results/2025_10_30_check/original_flickr/gn_set${set} \
+        path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/results/2025_11_01_check/flickr_check/gn_set${set} \
         \
         target_model="llava-v1.5-7b" \
         \
-        data.member_dataset=JaineLi/VL-MIA-image \
-        data.member_subset=img_Flickr \
-        data.member_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/img_Flickr/flickr_sentences.json \
+        data.member_dataset='flickr_original_members' \
+        data.member_subset=/local/scratch/clo37/datasets/JaineLi_VL-MIA/flickr/flickr_member_subset.arrow \
+        data.member_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/img_Flickr/member_sentences.json \
         data.nonmember_dataset='sharegpt_4o' \
         data.nonmember_subset=/local/scratch/clo37/datasets/ShareGPT-4o/global_nonmember_subset_300.arrow \
         data.nonmember_desc_path=/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/sharegpt_4o/global_nonmember_subset_300.json \
@@ -52,5 +56,6 @@ for ((set=0; set<3; set++)); do
         data.augmentations.RandomResize.use=false \
         data.augmentations.RandomRotation.use=false \
         data.augmentations.RandomAffine.use=false \
-        data.augmentations.ColorJitter.use=false
+        data.augmentations.ColorJitter.use=false\
+
 done

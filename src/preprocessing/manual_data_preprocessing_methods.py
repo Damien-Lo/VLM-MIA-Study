@@ -4,7 +4,7 @@ import json
 import random
 from pathlib import Path
 from datasets import load_dataset, Dataset
-from datasets import Features, Value  # (optional)
+from datasets import Features, Value 
 import os
 
 '''
@@ -14,20 +14,12 @@ Given a JSON file of form [{'image': <img_path>, 'label': <label>},...], get a r
     @param out_path: output directory for JSON subset of same format
     @param num_samples: number of random samples
 '''
-def get_random_subset(data_path, class_labels, out_path, num_samples):
-    # data_path = '/local/scratch/clo37/datasets/LLaVA/LLaVA-Instruct-150K/llava_instruct_150k.json'
+def get_random_subset(data_path, num_samples, out_path=None):
     with open(data_path, "r") as f:
         data = json.load(f)
         
-    if type(class_labels) == str:
-        with open(class_labels, "r") as f:
-            class_labels = json.load(f)
-        
-    print(f"Length: {len(data)}")
-    print(f"Type: {type(data)}")
 
     def random_int_list(m: int, n: int):
-        # draws m distinct ints from 0..n (inclusive)
         if m > n + 1:
             raise ValueError("m cannot exceed the size of the range (n+1).")
         return random.sample(range(n + 1), m)
@@ -36,25 +28,21 @@ def get_random_subset(data_path, class_labels, out_path, num_samples):
     result = list()
     for idx, sample in enumerate(data):
         if idx in desired_idxs:
-            result.append(
-                {
-                    'image': f"/local/scratch/clo37/datasets/COCO_2017_train/images/{sample['image']}",
-                    'label': class_labels[idx]
-                }
-                )
-            
-    # out_path = Path("/local/scratch/clo37/datasets/COCO_2017_train/llava_fft_splits/member_subset.json")
-    with Path(out_path).open("w", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, indent=2, sort_keys=True)
+            result.append(sample)
+    if out_path != None:
+        with Path(out_path).open("w", encoding="utf-8") as f:
+            json.dump(result, f, ensure_ascii=False, indent=2, sort_keys=True)
+    return result
         
         
 '''
-json_to_arrow_file
+json_to_dataset
 Given a json file of [{'image': <img_path>, 'label': <label>},...], convert into a dataset object (from huggyface) with image being "image path" objects
     @param json_path: JSON file with format: [{'image': <img_path>, 'label': <label>},...]
-    @param out_path: output directory for JSON subset of same format
+    @param out_path: output directory for JSON subset of same format if none not saved locally
+Return: dataset object
 '''
-def json_to_arrow_file(json_path, out_path):
+def json_to_dataset(json_path, out_path=None):
 
 
     # Load as a single 'train' split
@@ -67,8 +55,17 @@ def json_to_arrow_file(json_path, out_path):
         "label": Value("int64"),
     })
     ds = ds.cast(features)
-    ds.save_to_disk(out_path)
     
+    if out_path != None:
+        ds.save_to_disk(out_path)
+        
+        data_info_path = os.path.join(out_path, "dataset_info.json")
+        state_path = os.path.join(out_path, "state.json")
+        
+        os.remove(data_info_path)
+        os.remove(state_path)
+        
+    return ds
         
 
 '''
@@ -101,8 +98,7 @@ def get_class_subset(json_path, label_path, desired_label, out_path):
     dump_cols_as_lists(desired, out_path)
     
     
-def build_mixed_target_set(member_data_path, nonmember_data_path, ratio, out_path):
-    # ratios = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+def build_mixed_target_set(size_of_set, member_data_path, nonmember_data_path, ratio, out_path):
     
     with open(member_data_path, "r") as f:
         member_data = json.load(f)
@@ -146,10 +142,16 @@ def main():
     # json_to_arrow_file('/local/scratch/clo37/datasets/mixed_sets/flickr/mixed_subset_memrat_1.0.json', '/local/scratch/clo37/datasets/mixed_sets/flickr/')
     
     ratios = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+
     
     for ratio in ratios:
-       json_to_arrow_file(f'/local/scratch/clo37/datasets/mixed_sets/flickr/flickr_pretrain_member_ratio_{ratio}/mixed_subset_memrat_{ratio}_val.json',
-                          f'/local/scratch/clo37/datasets/mixed_sets/flickr/flickr_pretrain_member_ratio_{ratio}')
+       json_to_arrow_file(f'/local/scratch/clo37/datasets/mixed_sets/coco_2017_ift/coco_2017_IFT_member_ratio_{ratio}/mixed_subset_memrat_{ratio}_target.json',
+                          f'/local/scratch/clo37/datasets/mixed_sets/coco_2017_ift/coco_2017_IFT_member_ratio_{ratio}/')
+    
+        # build_mixed_target_set('/local/scratch/clo37/datasets/COCO_2017_train/llava_fft_splits/fft_member_subset_300.json',
+        #                        '/local/scratch/clo37/datasets/JaineLi_VL-MIA/flickr/flickr_nonmember_subset.json',
+        #                        ratio,
+        #                        f'/local/scratch/clo37/datasets/mixed_sets/coco_2017_ift/coco_2017_IFT_member_ratio_{ratio}')
     
     
     print("Done")

@@ -7,3 +7,6 @@ cat /local/scratch/nvidia-smi-output
 
 Check my Active Jobs:
 squeue -u clo37 -o "%.18A %.8T %.10M %.10L %.5C %.40j %.10l %.R"
+
+Real time update sqeueue:
+watch -n 1 -d 'squeue'

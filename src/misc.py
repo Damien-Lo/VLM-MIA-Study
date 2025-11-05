@@ -61,18 +61,31 @@ def build_descriptions_dataset(cfg):
     # member_desc_path = os.path.join(str(cfg.data.desc_data_root_path), str(cfg.target_model.type), str(cfg.data.member_subset), "member_sentences.json")
     # nonmember_desc_path = os.path.join(str(cfg.data.desc_data_root_path), str(cfg.target_model.type), str(cfg.data.nonmember_subset), "nonmember_sentences.json")
     
-    member_desc_path = cfg.data.member_desc_path
-    nonmember_desc_path = cfg.data.nonmember_desc_path
     
-    with open(member_desc_path, 'r') as f:
-        mem_data = json.load(f)
-    with open(nonmember_desc_path, 'r') as f:
-        nonmem_data = json.load(f)
-    
-    member_idxs = mem_data['idxs']
-    nonmember_idxs = nonmem_data['idxs']
-        
     descriptions = list()
-    descriptions.extend(mem_data["sentences"])
-    descriptions.extend(nonmem_data['sentences'])
-    return member_idxs, nonmember_idxs, descriptions
+    
+    if cfg.data.member_dataset != "":
+        member_desc_path = cfg.data.member_desc_path
+        with open(member_desc_path, 'r') as f:
+            mem_data = json.load(f)
+        member_idxs = mem_data['idxs']
+        
+    if cfg.data.nonmember_dataset != "":
+        nonmember_desc_path = cfg.data.nonmember_desc_path
+        with open(nonmember_desc_path, 'r') as f:
+            nonmem_data = json.load(f)
+        nonmember_idxs = nonmem_data['idxs']
+    
+    if cfg.data.nonmember_dataset != "" and cfg.data.member_dataset != "": 
+        descriptions.extend(mem_data["sentences"])
+        descriptions.extend(nonmem_data['sentences'])
+        return member_idxs, nonmember_idxs, descriptions
+    
+    elif cfg.data.dataset != "":
+        print("Loading Single Description")
+        with open(cfg.data.single_desc_path, 'r') as f:
+            desc = json.load(f)
+        return [],[], desc['sentences']
+    else:
+        raise ValueError(f"No Descriptions Passed")
+        

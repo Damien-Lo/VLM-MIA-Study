@@ -6,6 +6,7 @@ logs/
 *.log
 *.err
 *.out
+/__pycache__/
 
 # Model checkpoints and weights
 *.pths
@@ -43,5 +44,9 @@ slurm-*.out
 *.slurm
 
 # Generated data
-gen_descriptions/
 generated_data/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class

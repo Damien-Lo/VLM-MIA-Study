@@ -148,11 +148,14 @@ def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, mod
         print(f"Nonember data split: {cfg.data.nonmember_subset} with length: {len(_nonmember_dataset)}")
         print(f"Total Built Dataset length: {len(_dataset)} vs expected length of : {len(_member_dataset) + len(_nonmember_dataset)} and description length of {len(descriptions)}")
     else:
-        _dataset = load_dataset(path=cfg.data.dataset,
-                                name=cfg.data.subset,
-                                split=cfg.data.split,
-                                cache_dir=cfg.path.cache_dir)
-    
+        if cfg.data.dataset == 'JaineLi/VL-MIA-image' and cfg.data.subset in ['img_Flickr', 'img_dalle']:
+            _dataset = load_dataset(path=cfg.data.dataset,
+                                    name=cfg.data.subset,
+                                    split=cfg.data.split,
+                                    cache_dir=cfg.path.cache_dir)
+        else:
+            _dataset = Dataset.from_file(cfg.data.subset).cast_column("image", HFImage(decode=True))
+            
     _dataset = _dataset.add_column("indices", list(range(len(_dataset))))
     _dataset = _dataset.add_column("desc", descriptions)
     print("DATASET LOADED")
@@ -181,6 +184,7 @@ def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, mod
             _dataset = _dataset.map(convert_to_augmentation_mod_infer,
                                 batched=True,
                                 load_from_cache_file=False,
+                                keep_in_memory=True,
                                 fn_kwargs={
                                     "tokenizer": tokenizer,
                                     "image_processor": image_processor,
@@ -195,6 +199,7 @@ def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, mod
             _dataset = _dataset.map(convert_to_mod_infer,
                                 batched=True,
                                 load_from_cache_file=False,
+                                keep_in_memory=True,
                                 fn_kwargs={
                                     "tokenizer": tokenizer,
                                     "image_processor": image_processor,
@@ -209,6 +214,7 @@ def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, mod
             _dataset = _dataset.map(convert_to_augmentation_mod_infer_minigpt,
                                     batched=True,
                                     load_from_cache_file=False,
+                                    keep_in_memory=True,
                                     fn_kwargs={
                                         "instruction": text,
                                         "cfg": cfg
@@ -216,7 +222,8 @@ def get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, mod
         else:
             _dataset = _dataset.map(convert_to_mod_infer_minigpt,
                                     batched=True,
-                                    load_from_cache_file=False)
+                                    load_from_cache_file=False,
+                                    keep_in_memory=True,)
     else:
         raise ValueError(f"Unknown model type {cfg.target_model.type}")
 
