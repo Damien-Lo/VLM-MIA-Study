@@ -1,14 +1,13 @@
-dataset: "JaineLi/VL-MIA-image"
-subset: "img_Flickr"
-single_desc_path: ""
+dataset: ""
+pre_gen_descriptions: ""
+target_set_size: 300
+n_nm_ratio: 0.5
 member_dataset: ""
-member_subset: ""
-member_desc_path: ""
 nonmember_dataset: ""
-nonmember_subset: ""
-nonmember_desc_path: ""
-split: train
-augmentations: 
+reference_datasets_list: []
+reference_set_sample_distribution: []
+save_datasets: true
+augmentations:
   RandomResize:
     use: true
     size: 

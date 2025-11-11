@@ -150,71 +150,144 @@ def get_meta_metrics_by_part(total_parts, part, cfg):
                 for _token_idx, token_id in enumerate(aug_result[part]["input_ids"][_batch_idx][1:]):
                     # Theis is where the per-token metrics are computed
                     # If a meta_metric is a tensor, set them to numpy array.
-
+                    
                     token_probs = aug_result[part]["probabilities"][_batch_idx][_token_idx, :]
                     token_log_probs = aug_result[part]["log_probabilities"][_batch_idx][_token_idx, :]
                     token_probs_clamped = torch.clamp(token_probs, min=epsilon, max=1-epsilon)
 
                     # Renyi_1
                     entropy = -(token_probs * token_log_probs).sum().item()
+                    
                     meta_metrics["entropies"][aug_type][aug_idx][_batch_idx].append(entropy)
                     meta_metrics["renyi_1_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, 1))
                     
-                    # No_norm
-                    meta_metrics["no_norm_probs"][aug_type][aug_idx][_batch_idx].append(token_probs_clamped)
+                    if (
+                        "max_k_no_norn_kl_div" in cfg.img_metrics.metrics_to_use 
+                        or "max_k_no_norn_kl_div_tkn_vals" in cfg.img_metrics.get_proc_meta_metrics 
+                        or "no_norm_probs" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        # No_norm
+                        meta_metrics["no_norm_probs"][aug_type][aug_idx][_batch_idx].append(token_probs_clamped)
 
                     # Renyi_05
-                    alpha=0.5
-                    renyi_05 = (1 / (1-alpha)) * torch.log(torch.sum(torch.pow(token_probs_clamped, alpha))).item()
-                    meta_metrics["renyi_05_entro"][aug_type][aug_idx][_batch_idx].append(renyi_05)
-                    meta_metrics["renyi_05_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, 0.5))
+                    if (
+                        "max_k_renyi_05_kl_div" in cfg.img_metrics.metrics_to_use
+                        or "mod_renyi_05_entro" in cfg.img_metrics.metrics_to_use
+                        or "max_k_renyi_05_entro" in cfg.img_metrics.metrics_to_use
+                        or "min_k_renyi_05_entro" in cfg.img_metrics.metrics_to_use
+                        or "max_k_renyi_05_kl_div_tkn_vals" in cfg.img_metrics.get_proc_meta_metrics 
+                        or "renyi_05_entro" in cfg.img_metrics.get_raw_meta_metrics 
+                        or "renyi_05_probs" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        alpha=0.5
+                        renyi_05 = (1 / (1-alpha)) * torch.log(torch.sum(torch.pow(token_probs_clamped, alpha))).item()
+                        meta_metrics["renyi_05_entro"][aug_type][aug_idx][_batch_idx].append(renyi_05)
+                        meta_metrics["renyi_05_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, 0.5))
 
                     # Renyi_2
-                    alpha=2
-                    renyi_2 = (1 / (1-alpha)) * torch.log(torch.sum(torch.pow(token_probs_clamped, alpha))).item()
-                    meta_metrics["renyi_2_entro"][aug_type][aug_idx][_batch_idx].append(renyi_2)
-                    meta_metrics["renyi_2_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, 2))
+                    if (
+                        "max_k_renyi_2_kl_div" in cfg.img_metrics.metrics_to_use
+                        or "mod_renyi_2_entro" in cfg.img_metrics.metrics_to_use
+                        or "max_k_renyi_2_entro" in cfg.img_metrics.metrics_to_use
+                        or "min_k_renyi_2_entro" in cfg.img_metrics.metrics_to_use
+                        or "max_k_renyi_2_kl_div_tkn_vals" in cfg.img_metrics.get_proc_meta_metrics 
+                        or "renyi_2_entro" in cfg.img_metrics.get_raw_meta_metrics 
+                        or "renyi_2_probs" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        alpha=2
+                        renyi_2 = (1 / (1-alpha)) * torch.log(torch.sum(torch.pow(token_probs_clamped, alpha))).item()
+                        meta_metrics["renyi_2_entro"][aug_type][aug_idx][_batch_idx].append(renyi_2)
+                        meta_metrics["renyi_2_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, 2))
 
                     # Renyi_inf
-                    max_p = token_log_probs.max().item()
-                    second_p = token_log_probs[token_log_probs != token_log_probs.max()].max().item()
-                    gap_p = max_p - second_p
-                    meta_metrics["gap_probs"][aug_type][aug_idx][_batch_idx].append(gap_p)
-                    meta_metrics["max_probs"][aug_type][aug_idx][_batch_idx].append(max_p)
-                    meta_metrics["renyi_inf_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, "inf"))
+                    if (
+                        "max_k_renyi_inf_kl_div" in cfg.img_metrics.metrics_to_use 
+                        or "max_k_renyi_inf_kl_div_tkn_vals" in cfg.img_metrics.get_proc_meta_metrics 
+                        or "gap_probs" in cfg.img_metrics.get_raw_meta_metrics 
+                        or "max_probs" in cfg.img_metrics.get_raw_meta_metrics
+                        or "renyi_inf_probs" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        max_p = token_log_probs.max().item()
+                        second_p = token_log_probs[token_log_probs != token_log_probs.max()].max().item()
+                        gap_p = max_p - second_p
+                        meta_metrics["gap_probs"][aug_type][aug_idx][_batch_idx].append(gap_p)
+                        meta_metrics["max_probs"][aug_type][aug_idx][_batch_idx].append(max_p)
+                        meta_metrics["renyi_inf_probs"][aug_type][aug_idx][_batch_idx].append(renyi_probs(token_probs_clamped, "inf"))
 
-                    min_k_p = token_log_probs[token_id].item()
-                    meta_metrics["all_prob"][aug_type][aug_idx][_batch_idx].append(min_k_p)
-
-                    cross_entropy_loss = -min_k_p
-                    meta_metrics["losses"][aug_type][aug_idx][_batch_idx].append(cross_entropy_loss)
+                    if (
+                        "mink" in cfg.img_metrics.metrics_to_use
+                        or "all_prob" in cfg.img_metrics.get_raw_meta_metrics
+                        or "losses" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        min_k_p = token_log_probs[token_id].item()
+                        meta_metrics["all_prob"][aug_type][aug_idx][_batch_idx].append(min_k_p)
+                        cross_entropy_loss = -min_k_p
+                        meta_metrics["losses"][aug_type][aug_idx][_batch_idx].append(cross_entropy_loss)
 
                     # Modified entropy
-                    p_y = token_probs_clamped[token_id].item()
-                    modified_entropy = -(1 - p_y) * torch.log(torch.tensor(p_y)) - (token_probs * torch.log(1 - token_probs_clamped)).sum().item() + p_y * torch.log(torch.tensor(1 - p_y)).item()
-                    meta_metrics["modified_entropies"][aug_type][aug_idx][_batch_idx].append(modified_entropy)
+                    if(
+                        "mod_renyi_1_entro" in cfg.img_metrics.metrics_to_use
+                        or "mod_renyi_05_entro" in cfg.img_metrics.metrics_to_use
+                        or "mod_renyi_2_entro" in cfg.img_metrics.metrics_to_use
+                        or "modified_entropies" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        p_y = token_probs_clamped[token_id].item()
+                        modified_entropy = -(1 - p_y) * torch.log(torch.tensor(p_y)) - (token_probs * torch.log(1 - token_probs_clamped)).sum().item() + p_y * torch.log(torch.tensor(1 - p_y)).item()
+                        meta_metrics["modified_entropies"][aug_type][aug_idx][_batch_idx].append(modified_entropy)
 
                     token_probs_remaining = torch.cat((token_probs_clamped[:token_id], token_probs_clamped[token_id+1:]))
                     
-                    for alpha in [0.5,2]:
-                        entropy = - (1 / abs(1 - alpha)) * (
-                            (1-p_y)* p_y**(abs(1-alpha))\
-                                - (1-p_y)
-                                + torch.sum(token_probs_remaining * torch.pow(1-token_probs_remaining, abs(1-alpha))) \
-                                - torch.sum(token_probs_remaining)
-                                ).item() 
-                        if alpha==0.5:
-                            meta_metrics["modified_entropies_alpha_05"][aug_type][aug_idx][_batch_idx].append(entropy)
-                        if alpha==2:
-                            meta_metrics["modified_entropies_alpha_2"][aug_type][aug_idx][_batch_idx].append(entropy)
+                    if(
+                        "mod_renyi_05_entro" in cfg.img_metrics.metrics_to_use
+                        or "mod_renyi_2_entro" in cfg.img_metrics.metrics_to_use
+                        or "modified_entropies_alpha_05" in cfg.img_metrics.get_raw_meta_metrics
+                        or "modified_entropies_alpha_2" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        for alpha in [0.5,2]:
+                            entropy = - (1 / abs(1 - alpha)) * (
+                                (1-p_y)* p_y**(abs(1-alpha))\
+                                    - (1-p_y)
+                                    + torch.sum(token_probs_remaining * torch.pow(1-token_probs_remaining, abs(1-alpha))) \
+                                    - torch.sum(token_probs_remaining)
+                                    ).item() 
+                            if alpha==0.5:
+                                meta_metrics["modified_entropies_alpha_05"][aug_type][aug_idx][_batch_idx].append(entropy)
+                            if alpha==2:
+                                meta_metrics["modified_entropies_alpha_2"][aug_type][aug_idx][_batch_idx].append(entropy)
 
                     # Add our metrics
-                    _ce_loss = -token_log_probs[token_id].cpu().numpy()
-                    meta_metrics["per_token_CE_loss"][aug_type][aug_idx][_batch_idx].append(_ce_loss)
+                    if(
+                        "cross_entropy_mink" in cfg.img_metrics.metrics_to_use
+                        or "cross_entropy_diff_mink" in cfg.img_metrics.metrics_to_use
+                        or "per_token_CE_loss" in cfg.img_metrics.get_raw_meta_metrics
+                    ):
+                        _ce_loss = -token_log_probs[token_id].cpu().numpy()
+                        meta_metrics["per_token_CE_loss"][aug_type][aug_idx][_batch_idx].append(_ce_loss)
 
-                loss = np.nanmean(meta_metrics["losses"][aug_type][aug_idx][_batch_idx])
-                meta_metrics["ppl"][aug_type][aug_idx].append(np.exp(loss))
-                meta_metrics["probabilities"][aug_type][aug_idx].append(aug_result[part]["probabilities"][_batch_idx].cpu().numpy())
-                meta_metrics["log_probabilities"][aug_type][aug_idx].append(aug_result[part]["log_probabilities"][_batch_idx].cpu().numpy())
+                if(
+                    "losses" in cfg.img_metrics.get_raw_meta_metrics
+                ):
+                    loss = np.nanmean(meta_metrics["losses"][aug_type][aug_idx][_batch_idx])
+                    
+                if(
+                    "ppl" in cfg.img_metrics.get_raw_meta_metrics
+                ):
+                    meta_metrics["ppl"][aug_type][aug_idx].append(np.exp(loss))
+                
+                if(
+                    "aug_kl" in cfg.img_metrics.metrics_to_use
+                    or "max_k_renyi_divergence_025" in cfg.img_metrics.metrics_to_use
+                    or "max_k_renyi_divergence_05" in cfg.img_metrics.metrics_to_use
+                    or "max_k_renyi_divergence_2" in cfg.img_metrics.metrics_to_use
+                    or "max_k_renyi_divergence_4" in cfg.img_metrics.metrics_to_use
+                    or "probabilities" in cfg.img_metrics.get_raw_meta_metrics
+                ):
+                    meta_metrics["probabilities"][aug_type][aug_idx].append(aug_result[part]["probabilities"][_batch_idx].cpu().numpy())
+                
+                if(
+                    "aug_kl" in cfg.img_metrics.metrics_to_use
+                    or "log_probabilities" in cfg.img_metrics.get_raw_meta_metrics
+                ):
+                    meta_metrics["log_probabilities"][aug_type][aug_idx].append(aug_result[part]["log_probabilities"][_batch_idx].cpu().numpy())
     
     return meta_metrics

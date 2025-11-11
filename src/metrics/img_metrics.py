@@ -68,9 +68,9 @@ def get_img_metric_by_parts(meta_metrics, cfg):
         _max_k_renyi_05_entro = max_entropy(meta_metrics["renyi_05_entro"], cfg.img_metrics.max_k_renyi_05_entro)
         pred["max_k_renyi_05_entro"] = _max_k_renyi_05_entro
 
-    if "max_k_renyi_inf" in cfg.img_metrics.metrics_to_use:
-        _max_k_renyi_inf = max_entropy(meta_metrics["renyi_inf_entro"], cfg.img_metrics.max_k_renyi_inf_entro)
-        pred["max_k_renyi_inf"] = _max_k_renyi_inf
+    # if "max_k_renyi_inf" in cfg.img_metrics.metrics_to_use:
+    #     _max_k_renyi_inf = max_entropy(meta_metrics["renyi_inf_entro"], cfg.img_metrics.max_k_renyi_inf_entro)
+    #     pred["max_k_renyi_inf"] = _max_k_renyi_inf
 
     if "min_k_renyi_1_entro" in cfg.img_metrics.metrics_to_use:
         _min_k_renyi_1_entro = min_entropy(meta_metrics["entropies"], cfg.img_metrics.min_k_renyi_1_entro)

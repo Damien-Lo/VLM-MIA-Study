@@ -42,9 +42,12 @@ def save_run_meta(cfg):
     txt = f"""\
         Description: {cfg.job_meta_params.description}
         TEST CASE: {cfg.job_meta_params.test_run}, Only Running on first {cfg.inference.test_number_of_batches} batches
+        Run Job Type: {cfg.job_meta_params.job_type}
         Target Model: {cfg.target_model.type}
-        Target Member Dataset: {cfg.data.member_subset}
-        Target Nonmember Dataset: {cfg.data.nonmember_subset}
+        Target Member Dataset: {cfg.data.member_dataset}
+        Target Non-member Dataset: {cfg.data.nonmember_dataset}
+        Reference Datasets Used: {cfg.data.reference_datasets_list}
+        Reference Dataset Distribution: {cfg.data.reference_set_sample_distribution}
         Augmentations Used: {cfg.data.augmentations}
         Parts Tested: {cfg.img_metrics.parts}
         Metrics Tested: {cfg.img_metrics.metrics_to_use}

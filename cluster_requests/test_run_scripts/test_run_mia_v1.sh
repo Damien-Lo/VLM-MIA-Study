@@ -11,22 +11,27 @@
 source ~/.bashrc
 conda activate vlm_mia_latest_venv
 
+member_dataset="/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/FINAL_DATA/FINAL_DATASETS/coco_2017/coco_2017_members.json"
+nonmember_dataset="/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/FINAL_DATA/FINAL_DATASETS/flickr/flickr_nonmember_subset.json"
+
 export PYTHONPATH=$PYTHONPATH:/local/scratch/clo37/vlm_large_mia/
 
 python /home/clo37/priv/VLM-MIA-Study/mia.py \
-    job_meta_params.test_run=false \
-    job_meta_params.description="Test Run 1 with intergration testing coco_members and flickr_nonmembers" \
+    job_meta_params.test_run=true \
+    job_meta_params.description="'Test Run 1 with new dataset builder with target set of coco members, flickr nonmembers and sharegpt and flickr'" \
+    job_meta_params.job_type=hyperparam_tuning \
     \
-    path.output_dir=/home/clo37/priv/VLM-MIA-Study/results/TEST_MIA1 \
+    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/test_results/TEST_MIA1 \
     \
-    target_model="minigpt-4" \
+    target_model="llava-v1.5-7b" \
     \
-    data.member_dataset='coco_2014' \
-    data.member_subset='/local/scratch/clo37/datasets/LLaVA-Instruct-150K/img_coco/member_dataset/member_dataset.arrow' \
-    data.member_desc_path='/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/coco_2024/member_sentences.json' \
-    data.nonmember_dataset='JaineLi/VL-MIA-image' \
-    data.nonmember_subset='img_Flickr' \
-    data.nonmember_desc_path='/home/clo37/priv/VLM-MIA-Study/gen_descriptions/llava/img_Flickr/nonmember_sentences.json' \
+    data.save_datasets=true \
+    data.target_set_size=300 \
+    data.n_nm_ratio=0.5 \
+    data.member_dataset=${member_dataset} \
+    data.nonmember_dataset=${nonmember_dataset} \
+    data.reference_datasets_list=["/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/FINAL_DATA/FINAL_DATASETS/share_gpt/global_nonmember_fullset.json","/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/FINAL_DATA/FINAL_DATASETS/flickr/flickr_nonmember_subset.json"] \
+    data.reference_set_sample_distribution=[0.5,0.5] \
     \
     img_metrics.parts=["img"] \
     img_metrics.metrics_to_use=["min_k_renyi_05_kl_div","min_k_renyi_1_kl_div","min_k_renyi_2_kl_div","min_k_renyi_inf_kl_div","min_k_renyi_divergence_025","min_k_renyi_divergence_05","min_k_renyi_divergence_2","min_k_renyi_divergence_4"] \

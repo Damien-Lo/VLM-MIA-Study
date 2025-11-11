@@ -15,9 +15,15 @@ from src.eval import evaluate
 from src.inference import inference
 from src.data import get_mod_infer_data
 from src.data import get_generation_data
+from src.data.generate_descriptions import generate_descriptions
 from src.model import load_target_model
 from textwrap import dedent
 from src.misc import save_to_json, save_to_pt, save_run_meta, build_descriptions_dataset
+from src.preprocessing.dataset_building_methods import build_target_set, json_to_dataset, list_to_dataset, get_random_subset, build_reference_set
+from datasets import Dataset, concatenate_datasets
+from datasets.features import Image as HFImage
+from omegaconf import OmegaConf, ListConfig
+
 
 
 
@@ -71,6 +77,7 @@ def main(cfg):
           ==================================================
                             LOADING MODEL
           ==================================================
+          \n \n
           '''
           )
 
@@ -95,37 +102,101 @@ def main(cfg):
           '''
           )    
     
+    if cfg.job_meta_params.job_type == "hyperparam_tuning":
+        print("Hyperparamter selected, building combined target and reference set")
+        
+        if os.path.splitext(cfg.data.member_dataset)[1].lower() == ".json" and os.path.splitext(cfg.data.nonmember_dataset)[1].lower() == ".json":
+            # Build a target set of members and nonmembers
+            member_target_set, nm_target_set = build_target_set(cfg.data.target_set_size, cfg.data.n_nm_ratio, cfg.data.member_dataset, cfg.data.nonmember_dataset)
+            list_to_dataset(member_target_set, out_path=(os.path.join(cfg.path.output_dir, "datasets", "member_target_dataset.parquet")))
+            target_non_member_set = list_to_dataset(nm_target_set, out_path=(os.path.join(cfg.path.output_dir, "datasets", "non_member_target_dataset.parquet")))
+            target_set_list = member_target_set + nm_target_set
+            target_dataset = list_to_dataset(target_set_list, out_path=(os.path.join(cfg.path.output_dir, "datasets", "target_dataset.parquet")))
+        elif os.path.splitext(cfg.data.member_dataset)[1].lower() == ".parquet" and os.path.splitext(cfg.data.nonmember_dataset)[1].lower() == ".parquet":
+            target_member_dataset = Dataset.from_parquet(cfg.data.member_dataset)
+            target_non_member_set = Dataset.from_parquet(cfg.data.nonmember_dataset)
+            target_dataset = concatenate_datasets([target_member_dataset, target_non_member_set])
+        else:
+            target_dataset = None
+            target_non_member_set = None
+            raise ValueError("Member or Non-member dataset not valid type (json or parquet)")
+            
+        # Building Reference Set of known non_members equal to size of target set from a distribution/list of possible non_member sources
+        if isinstance(cfg.data.reference_datasets_list,ListConfig):
+            reference_datasets_paths = list(cfg.data.reference_datasets_list)
+            reference_datasets_distribution = list(cfg.data.reference_set_sample_distribution)
+            reference_dataset = build_reference_set(cfg.data.target_set_size, reference_datasets_paths, reference_datasets_distribution)
+            if reference_dataset != None:
+                reference_dataset = list_to_dataset(reference_dataset, out_path=(os.path.join(cfg.path.output_dir, "datasets", "reference_dataset.parquet") if cfg.data.save_datasets else None))
+            else:
+                print("No Reference Set Given, using exact non_member set as referece set too")
+                reference_dataset = copy.deepcopy(target_non_member_set).remove_columns("tune_label")
+                if cfg.data.save_datasets:
+                    reference_dataset.to_parquet(os.path.join(cfg.path.output_dir, "datasets", "reference_dataset.parquet"))
+        else:
+            reference_dataset = Dataset.from_parquet(cfg.data.reference_datasets_list)
+            
+        # Add the tune label of 0 to the reference set
+        reference_dataset = reference_dataset.add_column('tune_label', [0]*len(reference_dataset))
+        _dataset = concatenate_datasets([target_dataset,reference_dataset])
+        # Save Full Dataset
+        _dataset.to_parquet(os.path.join(cfg.path.output_dir, "datasets", "full_dataset.parquet"))
+    elif cfg.job_meta_params.job_type == "evaluation":
+        print("Evaluation selected, loading singlar target dataset from file")
+        _dataset = Dataset.from_parquet(cfg.data.dataset).cast_column("image", HFImage(decode=True))
+    else:
+        raise ValueError(f"'{cfg.job_meta_params.job_type}' is not a valid job_type, please use either 'hyperparam_tuning' or 'evaluation'. ")
     
     
-    member_idxs, nonmember_idxs, descriptions = build_descriptions_dataset(cfg)
+    _dataset = _dataset.add_column("indices", list(range(len(_dataset)))).cast_column("image", HFImage(decode=True))
+    print("Raw Dataset Built")
+    print("Sourcing Descriptions.....")
+    if cfg.data.pre_gen_descriptions != "":
+        print("Loading Descriptions from File")
+        descriptions = ""
+        # member_idxs, nonmember_idxs, descriptions = build_descriptions_dataset(cfg)
+    else:
+        print("Generating Descriptions")
+        descriptions = generate_descriptions(cfg, _dataset, out_path=None)
+        
+    print("Descriptions Loaded/Generated")
+    print(f"descriptions length: {len(descriptions)}")
+    print(f"dataset length: {len(_dataset)}")
+    
+    _dataset = _dataset.add_column("desc", descriptions["sentences"])
 
     print("Generating Inference and Augmentations.....")
     if cfg.target_model.type == "llava":
         model, tokenizer, image_processor, conv_mode = target_model
-        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions, model.config, tokenizer, image_processor, conv_mode)
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, _dataset, model.config, tokenizer, image_processor, conv_mode)
     elif cfg.target_model.type == "minigpt":
-        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, member_idxs, nonmember_idxs, text, descriptions)
+        mod_infer_data, image_sampled_indicies = get_mod_infer_data(cfg, text, _dataset)
     proc_meta_vaues_sampled_indices = list()
     raw_meta_vaues_sampled_indices = list()
-    class_labels = mod_infer_data["label"]
-
-    print("class_labels", type(class_labels))
+    
+    # Class Labels
+    true_class_labels = mod_infer_data["label"]
+    labels_to_save = {"true_class_labels" : true_class_labels}
+    if cfg.job_meta_params.job_type == "hyperparam_tuning":
+        labels_to_save['tune_class_labels'] = _dataset['tune_label']
+        
+    
     
     if cfg.job_meta_params.test_run:
-        class_labels = class_labels[: (cfg.inference.batch_size * cfg.inference.test_number_of_batches)]
+        true_class_labels = true_class_labels[: (cfg.inference.batch_size * cfg.inference.test_number_of_batches)]
     
 
     if cfg.img_metrics.get_raw_meta_examples > 0:
         raw_meta_vaues_sampled_indices = np.sort(np.concatenate([
-        np.where(np.array(class_labels) == 1)[0][:cfg.img_metrics.get_raw_meta_examples],
-        np.where(np.array(class_labels) == 0)[0][:cfg.img_metrics.get_raw_meta_examples]
+        np.where(np.array(true_class_labels) == 1)[0][:cfg.img_metrics.get_raw_meta_examples],
+        np.where(np.array(true_class_labels) == 0)[0][:cfg.img_metrics.get_raw_meta_examples]
         ]))
         
         
     if cfg.img_metrics.get_proc_meta_examples > 0:
         proc_meta_vaues_sampled_indices = np.sort(np.concatenate([
-        np.where(np.array(class_labels) == 1)[0][:cfg.img_metrics.get_proc_meta_examples],
-        np.where(np.array(class_labels) == 0)[0][:cfg.img_metrics.get_proc_meta_examples]
+        np.where(np.array(true_class_labels) == 1)[0][:cfg.img_metrics.get_proc_meta_examples],
+        np.where(np.array(true_class_labels) == 0)[0][:cfg.img_metrics.get_proc_meta_examples]
         ]))
     print("Completed. Tokens Acquired")
     
@@ -196,19 +267,19 @@ def main(cfg):
     if cfg.img_metrics.get_token_labels > 0:
         print("Saving token labels to json...")
         save_to_json(proc_meta_vaues_sampled_indices.tolist(), "all_proc_meta_sampled_examples",cfg)
-        save_to_json(list(class_labels), "class_labels", cfg)
+        save_to_json(list(true_class_labels), "class_labels", cfg)
         save_to_json(global_token_labels, "token_labels", cfg)
         
     if cfg.img_metrics.get_raw_meta_examples > 0:
         print("Saving raw meta values to pt......")
         save_to_json(raw_meta_vaues_sampled_indices.tolist(), "all_raw_meta_sampled_examples",cfg)
-        save_to_json(list(class_labels), "class_labels", cfg)
+        save_to_json(list(true_class_labels), "class_labels", cfg)
         save_to_pt(sampled_raw_meta, "raw_meta_values", cfg)
     
     if cfg.img_metrics.get_proc_meta_examples > 0:
         print("Saving processed meta values to json....")
         save_to_json(proc_meta_vaues_sampled_indices.tolist(), "all_proc_meta_sampled_examples",cfg)
-        save_to_json(list(class_labels), "class_labels", cfg)
+        save_to_json(list(true_class_labels), "class_labels", cfg)
         save_to_json(proc_meta, "processed_meta_values", cfg)
         
     print('''
@@ -220,13 +291,29 @@ def main(cfg):
           '''
           )    
     # Evaluation
-    auc, acc, auc_low = evaluate(preds, mod_infer_data["label"], "img", cfg)        
+    if cfg.job_meta_params.job_type == "hyperparam_tuning":
+        auc, acc, auc_low = evaluate(preds, mod_infer_data["tune_label"], "img", cfg) 
+    elif cfg.job_meta_params.job_type == "evaluation":
+       auc, acc, auc_low = evaluate(preds, mod_infer_data["label"], "img", cfg) 
+    else:
+        raise ValueError(f"'{cfg.job_meta_params.job_type}' is not a valid job_type, please use either 'hyperparam_tuning' or 'evaluation'. ")       
 
     # Save
     print("Saving evaluation results.....")
     save_to_json(auc, "auc", cfg)
     save_to_json(acc, "acc", cfg)
-    save_to_json(auc_low, "auc_low", cfg)
+    save_to_json(auc_low, "tpr_005_fpr", cfg)
+    
+    
+    if cfg.job_meta_params.job_type == "hyperparam_tuning":
+         print('''
+          \n \n
+          ======================================================================
+                            Finding sigma of minimal kld difference
+          ======================================================================
+          \n \n
+          '''
+          ) 
     
     
     print('''
