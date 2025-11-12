@@ -151,16 +151,17 @@ def main(cfg):
     _dataset = _dataset.add_column("indices", list(range(len(_dataset)))).cast_column("image", HFImage(decode=True))
     print("Raw Dataset Built")
     print("Sourcing Descriptions.....")
+    # if cfg.data.pre_gen_descriptions != "" or "desc" not in [p for p in cfg.img_metrics.parts]:
     if cfg.data.pre_gen_descriptions != "":
-        print("Loading Descriptions from File")
-        descriptions = ""
+        print("Loading Descriptions from File or Skipping description gen as no description required")
+        descriptions = {"sentences": [""] * len(_dataset)}
         # member_idxs, nonmember_idxs, descriptions = build_descriptions_dataset(cfg)
     else:
         print("Generating Descriptions")
         descriptions = generate_descriptions(cfg, _dataset, out_path=None)
         
     print("Descriptions Loaded/Generated")
-    print(f"descriptions length: {len(descriptions)}")
+    print(f"descriptions length: {len(descriptions['sentences'])}")
     print(f"dataset length: {len(_dataset)}")
     
     _dataset = _dataset.add_column("desc", descriptions["sentences"])
@@ -206,32 +207,32 @@ def main(cfg):
     
 
     # Get the Raw Original Image and Augment Tensor Image
-    if len(mod_infer_data['orig_raw_images']) > 0:
-        print('''
-          \n \n
-          ==================================================
-                    SAVING RAW IMAGES TENSORS.....
-          ==================================================
-          \n \n
-          '''
-        )
+    # if len(mod_infer_data['orig_raw_images']) > 0:
+    #     print('''
+    #       \n \n
+    #       ==================================================
+    #                 SAVING RAW IMAGES TENSORS.....
+    #       ==================================================
+    #       \n \n
+    #       '''
+    #     )
         
         
-        save_stack = list()
-        for img in mod_infer_data['orig_raw_images']:
-            if img != None:
-                save_stack.append(img)
-        save_to_pt(save_stack, "orig_image_tensors", cfg)
+    #     save_stack = list()
+    #     for img in mod_infer_data['orig_raw_images']:
+    #         if img != None:
+    #             save_stack.append(img)
+    #     save_to_pt(save_stack, "orig_image_tensors", cfg)
         
-        save_stack = list()
-        for img in mod_infer_data['aug_raw_images']:
-            if img !=None:
-                save_stack.append(img)
-        save_to_pt(save_stack, "aug_image_tensors", cfg)
+    #     save_stack = list()
+    #     for img in mod_infer_data['aug_raw_images']:
+    #         if img !=None:
+    #             save_stack.append(img)
+    #     save_to_pt(save_stack, "aug_image_tensors", cfg)
     
-        print("RAW IMAGE SAVE COMPLETE")   
-    if cfg.img_metrics.get_raw_images > 0:
-        save_to_json(image_sampled_indicies, "image_sampled_indicies", cfg)
+    #     print("RAW IMAGE SAVE COMPLETE")   
+    # if cfg.img_metrics.get_raw_images > 0:
+    #     save_to_json(image_sampled_indicies, "image_sampled_indicies", cfg)
         
         
     print('''

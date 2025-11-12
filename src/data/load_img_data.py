@@ -170,19 +170,24 @@ def get_mod_infer_data(cfg, text, _dataset, model_config=None, tokenizer=None, i
 
     elif cfg.target_model.type == "minigpt":
         if cfg.inference.use_augmentation:
+            print("Getting convert_to_augmentation_mod_infer_minigpt")
             _dataset = _dataset.map(convert_to_augmentation_mod_infer_minigpt,
                                     batched=True,
                                     load_from_cache_file=False,
                                     keep_in_memory=True,
                                     fn_kwargs={
                                         "instruction": text,
-                                        "cfg": cfg
+                                        "cfg": cfg,
+                                        "image_sampled_indicies": image_sampled_indicies
                                     })
+            print("Loaded convert_to_augmentation_mod_infer_minigpt")
         else:
+            print("Getting convert_to_mod_infer_minigpt")
             _dataset = _dataset.map(convert_to_mod_infer_minigpt,
                                     batched=True,
                                     load_from_cache_file=False,
                                     keep_in_memory=True,)
+            print("Loaded convert_to_mod_infer_minigpt")
     else:
         raise ValueError(f"Unknown model type {cfg.target_model.type}")
 
@@ -548,8 +553,8 @@ def convert_to_augmentation_mod_infer_minigpt(examples, instruction, cfg, image_
         "indices": examples["indices"],
         "orig_images": all_orig_images,
         "aug_images": all_aug_images,
-        "orig_raw_images": all_orig_images,
-        "aug_raw_images": all_aug_images,
+        # "orig_raw_images": all_orig_images,
+        # "aug_raw_images": all_aug_images,
         "inst": all_texts,
         "desc": examples["desc"]
     }

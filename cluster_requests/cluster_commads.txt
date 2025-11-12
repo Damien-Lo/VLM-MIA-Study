@@ -10,3 +10,11 @@ squeue -u clo37 -o "%.18A %.8T %.10M %.10L %.5C %.40j %.10l %.R"
 
 Real time update sqeueue:
 watch -n 1 -d 'squeue'
+
+Check full name of Jobs
+squeue -j 20173 -o "%.18i %.200j %u %T %M %l %R"   
+
+
+All jobs in the last xdays
+sacct -u $USER --starttime -1days \
+      --format=JobID,JobName%30,Partition,State,Elapsed,Start,End,ExitCode

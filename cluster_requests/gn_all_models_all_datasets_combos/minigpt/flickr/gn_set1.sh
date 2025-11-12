@@ -5,6 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=300G
+#SBATCH --account=csai
 
 
 # Load environment
@@ -17,7 +18,7 @@ python /home/clo37/priv/VLM-MIA-Study/mia.py \
     job_meta_params.test_run=false \
     job_meta_params.description="'Minigpt Model with MEMBERS=flickr, NONMEMBERS=flickr at std set 1: [0.0,0.0001,0.00025,0.0005,0.00075,0.001,0.0025,0.005]'" \
     \
-    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/results/2025_10_23/minigpt/flickr/gn_set1 \
+    path.output_dir=/local/scratch/clo37/VLM_MIA_STUDY_Archive_Data/temp \
     \
     target_model="minigpt-4" \
     \
